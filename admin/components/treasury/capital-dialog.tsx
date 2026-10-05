@@ -25,7 +25,9 @@ import {
 
 const OUTFLOW_REASONS = [
   { value: "EXTERNAL_INVESTMENT", label: "External investment" },
-  { value: "OPERATIONAL_EXPENSE", label: "Operational expense" },
+  { value: "PARTNER_ALLOCATION", label: "Partner Allocation" },
+  { value: "PROJECT_FUNDING", label: "Project Funding" },
+  { value: "INVESTOR_ALLOCATION", label: "Investor Allocation" },
   { value: "OTHER", label: "Other" },
 ];
 
@@ -132,16 +134,16 @@ export function CapitalDialog({
       onConfirm={() =>
         isOutflow
           ? initiateOutflow.mutate({
-              amount: parsed,
-              currency,
-              reason,
-              description: description.trim() || undefined,
-            })
+            amount: parsed,
+            currency,
+            reason,
+            description: description.trim() || undefined,
+          })
           : initiateRefund.mutate({
-              amount: parsed,
-              currency,
-              description: description.trim() || undefined,
-            })
+            amount: parsed,
+            currency,
+            description: description.trim() || undefined,
+          })
       }
     >
       <Field
