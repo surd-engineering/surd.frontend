@@ -1,13 +1,5 @@
 import { AvatarLabel } from "@/components/ui/avatar-label";
 
-/**
- * An admin in a table cell, for the rows where there may not be one.
- *
- * The audit log and the config table both return `""` rather than `null` for a
- * row nobody has touched or whose user record is gone, so an unguarded
- * `AvatarLabel` renders a blank chip that reads like a loading state. A dash
- * says "nothing here" out loud.
- */
 export function PersonCell({
   name,
   email,

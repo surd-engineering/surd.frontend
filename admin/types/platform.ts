@@ -14,11 +14,6 @@ export interface PlatformConfig {
   updated_at: string;
 }
 
-/**
- * Every field is optional and omitted ones are left untouched, so the Edit
- * modal sends only the key it opened — sending the whole object back would
- * overwrite rows the admin never looked at.
- */
 export type PlatformConfigInput = Partial<
   Omit<PlatformConfig, "created_at" | "updated_at">
 > & {
@@ -30,42 +25,26 @@ export type PlatformConfigInput = Partial<
   maximum_net_capital_outflow_usd?: number;
 };
 
-/**
- * One row of the Platform Configuration table. Returned in full every time —
- * no arguments, no pagination.
- */
 export interface AdminPlatformConfigKey {
   key: PlatformConfigKey;
 
-  /** Already the display string ("Operating Buffer"). */
   label: string;
 
-  /** A plain number; format it with `unit`. The API rejects strings. */
   value: number;
 
-  /** Intrinsic to the key, so it renders as a fixed suffix, never a picker. */
   unit: ConfigUnit;
 
-  /** Backend copy explaining the key. Not editable — there is no field for it. */
   description: string;
 
-  /** All empty until the key has first been edited. */
   updated_by_id: string;
   updated_by_firstname: string;
   updated_by_lastname: string;
   updated_by_email: string;
   updated_by_avatar: string;
 
-  /** `null` when never edited. Derived from the audit trail by the save. */
   updated_at: string | null;
 }
 
-/**
- * Which field on `PlatformConfigInput` a row saves through.
- *
- * Two of these are `Int`, not `Float` — sending `24.0` for
- * `withdrawal_processing_hours` is a type error, so the modal rounds first.
- */
 export const CONFIG_KEY_FIELDS = {
   OPERATING_BUFFER: { field: "operating_buffer_pct", integer: false },
   LARGE_TRANSACTION_THRESHOLD: { field: "large_transaction_threshold", integer: false },

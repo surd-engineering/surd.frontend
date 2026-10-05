@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 
-/** The design's default is 5, and the ladder starts there. */
 export const DEFAULT_PAGE_SIZE = 5;
 
 export const PAGE_SIZE_OPTIONS = [5, 10, 20, 50] as const;
@@ -110,15 +109,6 @@ function buildPageNumbers(
   return [1, PAGE_ELLIPSIS, ...middle, PAGE_ELLIPSIS, totalPages];
 }
 
-/**
- * Page and page size for a **server**-paginated table, where the query needs
- * both and `usePagination` cannot help — it slices rows the server has already
- * sliced.
- *
- * Changing the size returns to page one. Page 7 of a 5-row listing is page 3
- * of a 20-row one, and staying put would land the reader somewhere they did
- * not ask to be — often past the end, on an empty table.
- */
 export function useTablePage(initialPageSize: number = DEFAULT_PAGE_SIZE) {
   const [page, setPage] = useState(1);
   const [pageSize, setSize] = useState(initialPageSize);

@@ -6,10 +6,6 @@ import { Eyebrow } from "@/components/ui/eyebrow";
 import { LANDING_FAQS } from "@/content/faqs";
 import { LANDING_FAQ_INTRO } from "@/content/landing";
 
-/**
- * Condensed FAQ on the dark band that leads into the footer. It reuses the
- * first category from `/faqs` so the two pages never drift apart.
- */
 export function FaqSection() {
   return (
     <section className=" bg-grey-1000 py-16 sm:py-20 lg:py-24">

@@ -69,30 +69,17 @@ import { Permission } from "@/types/permission";
 import type { Transaction } from "@/types/transaction";
 import { useCurrency } from "@/contexts/currency";
 
-/*
- * Every control maps to a field on the shared transaction filter, exactly as
- * the Treasury doc lays out. `capital_transaction: true` stays set alongside
- * all of them, or the query widens to the whole ledger.
- *
- * The amount bands are naira figures from the design; they are sent as
- * `min_amount` / `max_amount` in whatever currency is in force, which is the
- * only shape the API offers.
- */
 const STATUS_OPTIONS: FilterOption[] = [
   { value: "", label: "All transactions" },
   { value: TransactionType.CapitalOutflow, label: "Outflow" },
   { value: TransactionType.CapitalRefund, label: "Refund" },
 ];
 
-/* The flag is what an admin actually reads here — the code beside it is the
-   caption, not the identifier. */
 const CURRENCY_OPTIONS: FilterOption[] = PLATFORM_CURRENCIES.map((entry) => ({
   value: entry.value,
   label: entry.label,
   adornment: <Flag code={entry.country} size="sm" />,
 }));
-
-/* FIXME(api): an enum server-side; the note only names EXTERNAL_INVESTMENT. */
 
 export default function TreasuryPage() {
   const { currency } = useCurrency();
@@ -132,12 +119,8 @@ export default function TreasuryPage() {
   ];
 
   const { data: rows, isLoading: loadingRows } = useTransactions({
-    /* Must stay set alongside the other filters, or this widens to the whole
-     * ledger rather than capital movements. */
     capital_transaction: true,
 
-    /* The Currency filter overrides the platform toggle when it is set — an
-       admin who asked for USD movements meant it. */
     currency: (filters.currency as Currency) ?? currency,
     search: search || undefined,
     ...(filters.type ? { type: filters.type } : {}),
@@ -150,8 +133,6 @@ export default function TreasuryPage() {
     paginate: true,
   });
 
-  /* One row per currency, nothing converted — match on `currency` rather than
-   * trusting the position. */
   const cards =
     overview?.data?.find((row) => row.currency === currency) ?? overview?.data?.[0];
 
@@ -174,10 +155,6 @@ export default function TreasuryPage() {
     {
       id: "status",
       header: "Status",
-      /* The one place in the ledger where `type` is the right field: both
-         capital types fall into `category: OTHER`, because the six-bucket
-         taxonomy describes customer money movement. Rendering `category` here
-         would label every row "Other". */
       cell: (row) => (
         <Badge
           tone={row.type === TransactionType.CapitalOutflow ? "danger" : "success"}
@@ -191,7 +168,6 @@ export default function TreasuryPage() {
     {
       id: "author",
       header: "Authorized by",
-      /* Capital rows store the authorizing admin, not a customer. */
       cell: (row) =>
         row.user ? (
           <OwnerCell name={formatName(row.user)} email={row.user.email} />
@@ -271,14 +247,11 @@ export default function TreasuryPage() {
             loadingCards ? "…" : formatCompactMoney(cards?.net_capital_position, currency)
           }
           icon={BankIcon}
-          /* Absolute, from the start-of-day Lagos snapshot. */
           delta={formatAbsoluteChange(cards?.net_capital_position_change_today, currency)}
           hint="Outflow minus refund: what is currently deployed out"
         />
         <StatCard
           label="Liquidity Ratio"
-          /* Null when there are nothing to cover — dividing by zero is not
-             "infinitely healthy", so it is a dash rather than a 0. */
           value={
             loadingCards
               ? "…"

@@ -24,8 +24,6 @@ const securityHeaders = [
 
 ];
 
-/* Fails the build, not the first page load, when the graph origin the CSP
-   needs is missing. The policy itself is issued per request by `proxy.ts`. */
 graphOrigin(process.env.NODE_ENV === "development");
 
 const nextConfig: NextConfig = {

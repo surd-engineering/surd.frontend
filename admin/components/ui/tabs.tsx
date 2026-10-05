@@ -19,12 +19,6 @@ type TabsProps = {
   onValueChange?: (value: string) => void;
   variant?: "underline" | "pill";
 
-  /**
-   * Rendered on the row the tabs sit on, pushed to its end — the design puts
-   * "New Template" beside the Templates/Fees pills rather than under them, and
-   * Radix requires the List to be a child of Root, so the slot has to live
-   * here rather than in the caller's markup.
-   */
   action?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
@@ -60,9 +54,6 @@ export function Tabs({
       <RadixTabs.List
         className={cn(
           "flex shrink-0 items-center overflow-x-auto",
-          /* No rule under the row: the design carries the active tab on its own
-             indicator, and a full-width divider inside a panel reads as a
-             section break the content does not have. */
           isPill ? "gap-3" : "gap-6",
           listClassName,
         )}
@@ -81,8 +72,6 @@ export function Tabs({
                     "data-[state=active]:bg-surd-blue-50 data-[state=active]:text-primary",
                   )
                 : cn(
-                    /* Flush, so the first label lines up with the content under
-                       it rather than sitting a padding-width to its right. */
                     "relative pb-3 text-md text-grey-400 hover:text-grey-900",
                     "data-[state=active]:text-primary",
                     "after:absolute after:inset-x-0 after:bottom-0 after:h-1 after:rounded-full",

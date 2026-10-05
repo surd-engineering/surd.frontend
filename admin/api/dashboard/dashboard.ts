@@ -17,11 +17,6 @@ import type {
   AdminSystemFundsPoint,
 } from "@/types/metrics";
 
-/**
- * `data` is a list — one row per currency, nothing converted. Passing
- * `currency` narrows it to a single row rather than changing the shape, so the
- * caller still has to pick the row out of the array.
- */
 export const useAdminOverviewMetrics = createQuery<
   AdminOverviewMetrics[],
   AdminCurrencyInput
@@ -42,11 +37,6 @@ export const useAdminSystemFunds = createQuery<
   staleTime: 60_000,
 });
 
-/**
- * `data` is a list of groups — one per `mode`, and omitting `mode` returns all
- * three — so passing a mode narrows the list rather than unwrapping it. Match
- * the group on `mode`; do not read `[0]`.
- */
 export const useAdminFundsBreakdown = createQuery<
   AdminBreakdownGroup[],
   AdminBreakdownInput

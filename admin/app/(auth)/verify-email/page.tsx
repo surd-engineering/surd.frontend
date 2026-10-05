@@ -23,7 +23,6 @@ export default function VerifyEmailPage() {
 
 const CODE_LENGTH = 6;
 
-/** Only used if the challenge did not carry its own clock. */
 const RESEND_SECONDS = 119;
 
 function VerifyEmailForm() {

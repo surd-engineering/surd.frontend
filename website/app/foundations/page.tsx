@@ -116,7 +116,6 @@ export default function Home() {
 
       <Section title="Typography">
         <div className="flex flex-col gap-4">
-          {/* Batica Sans (font-batica) is the display face; body copy is sans. */}
           <p className="font-batica text-display-sm font-extrabold">
             Display sm — Batica
           </p>

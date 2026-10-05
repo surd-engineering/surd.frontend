@@ -18,10 +18,6 @@ export const metadata: Metadata = {
     "Help build savings products that make financial growth feel clear, consistent and trustworthy.",
 };
 
-/**
- * Tints for the "how we work" principles: each is a tinted card holding a
- * deeper-tinted pill, in the order they appear.
- */
 const principleTones: Record<string, { card: string; pill: string }> = {
   pink: { card: "bg-pink-50", pill: "bg-pink-150 text-pink-950" },
   yellow: { card: "bg-yellow-50", pill: "bg-yellow-150 text-yellow-950" },
@@ -33,7 +29,6 @@ const principleTones: Record<string, { card: string; pill: string }> = {
 const pillClass =
   "inline-flex w-fit items-center rounded-full px-4 py-2 text-md font-semibold";
 
-/** The last principle shares its card with the highlight quote. */
 const stackedPrinciples = HOW_WE_WORK.principles.slice(0, -1);
 const featuredPrinciple =
   HOW_WE_WORK.principles[HOW_WE_WORK.principles.length - 1];
@@ -63,7 +58,6 @@ export default function CareersPage() {
         </div>
       </Section>
 
-      {/* Staggered gallery — heights alternate, as in the comp. */}
       <Section spacing="sm" bleed>
         <div className="flex gap-4">
           {["Team at work", "Office", "Offsite", "Desk setup"].map(
@@ -105,7 +99,6 @@ export default function CareersPage() {
             />
           </div>
 
-          {/* Cards stretch to the image's height; the last one carries the highlight. */}
           <ul className="flex flex-col gap-4 lg:col-span-5">
             {stackedPrinciples.map((principle) => (
               <li

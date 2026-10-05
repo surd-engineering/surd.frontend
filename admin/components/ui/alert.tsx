@@ -4,9 +4,7 @@ export const ALERT_TONES = ["info", "success", "warning", "danger"] as const;
 export type AlertTone = (typeof ALERT_TONES)[number];
 
 type ToneConfig = {
-  /** Border and fill. */
   surface: string;
-  /** Colour of the solid badge; the glyph inside it is always white. */
   badge: string;
   shape: "hexagon" | "circle";
   glyph: "exclamation" | "check" | "info";
@@ -39,13 +37,6 @@ const tones: Record<AlertTone, ToneConfig> = {
   },
 };
 
-/**
- * The filled badge, drawn rather than pulled from the icon set: these are solid
- * shapes with a knocked-out glyph, and the icon set is stroke-only.
- *
- * The hexagon is stroked in its own fill colour with a round line join, which
- * is what softens its corners.
- */
 function ToneBadge({ tone, className }: { tone: AlertTone; className?: string }) {
   const { shape, glyph } = tones[tone];
 

@@ -35,20 +35,12 @@ import {
 import type { Transaction } from "@/types/transaction";
 import { useCurrency } from "@/contexts/currency";
 
-/*
- * NGN and USD never mix — every card and the chart are per currency with no FX
- * conversion anywhere on this page, so this picks a row rather than combining
- * them. Flexi is NGN-only per the product brief, so USD normally reads zero.
- */
 const RECENT_LIMIT = 6;
 
 export default function FlexiWalletPage() {
   const { currency } = useCurrency();
   const { key, setKey, range, options } = useDateRange();
 
-  /* Its own window, not the chart's. The design puts a period control on both
-     panels, and two controls that move together would be one control drawn
-     twice. */
   const recent = useDateRange();
 
   const { data: overview, isLoading: loadingCards } = useAdminWalletOverview({
@@ -61,25 +53,13 @@ export default function FlexiWalletPage() {
     currency,
   });
 
-  /*
-   * FIXME(api): the note says to scope this to Flexi ourselves, but
-   * `TransactionFilterInput` exposes no wallet-type filter — only `wallet_id`,
-   * which is per account. Currency is as narrow as this gets today, so the
-   * panel currently shows platform activity in the selected currency. A
-   * `wallet_type` filter would close it.
-   */
   const { data: rows, isLoading: loadingRows } = useTransactions({
     currency,
-    /* The panel's own period actually scopes it — the table used to ignore
-       dates entirely while a control sat above it. Only the floor: the
-       granularity that travels with the range is for charts. */
     start_date: recent.range.start_date,
     limit: RECENT_LIMIT,
     page: 1,
   });
 
-  /* One row per currency, nothing converted — match on `currency` rather than
-   * trusting the position. */
   const cards =
     overview?.data?.find((row) => row.currency === currency) ?? overview?.data?.[0];
 
@@ -87,8 +67,6 @@ export default function FlexiWalletPage() {
     {
       id: "user",
       header: "User",
-      /* Resolved lazily and absent once a customer is deleted — fall back to
-         the id rather than rendering an empty row. */
       cell: (row) =>
         row.user ? (
           <OwnerCell
@@ -107,8 +85,6 @@ export default function FlexiWalletPage() {
       cell: (row) => <StatusBadge status={formatEnum(row.status)} />,
     },
     {
-      /* `category` is the display taxonomy; `type` is storage and stays off
-         the screen. */
       id: "type",
       header: "Type",
       cell: (row) => formatEnum(row.category),
@@ -124,9 +100,6 @@ export default function FlexiWalletPage() {
     },
     {
       id: "flow",
-      /* Derived server-side so every screen renders the same labels. One
-         question — where the money went — so the destination alone, with the
-         full leg on the cell. Transaction History renders both ends. */
       header: "To",
       cell: (row) =>
         row.flow ? (
@@ -155,8 +128,6 @@ export default function FlexiWalletPage() {
         description="Instant-access balances across the platform"
       />
 
-      {/* The four headline figures ride the brand banner, as they do on the
-          Overview — same component, so the two pages cannot drift apart. */}
       <HeroStatBanner>
         <HeroStat
           icon={Wallet03Icon}
@@ -199,20 +170,14 @@ export default function FlexiWalletPage() {
           value={
             loadingCards ? "…" : formatCompactMoney(cards?.flexi_roi_liability, currency)
           }
-          /* An amount, not a rate — the design's "+₦890K today". */
           delta={formatAbsoluteChange(cards?.flexi_roi_liability_change_today, currency)}
         />
       </HeroStatBanner>
-
-
 
       <Panel
         title="Flexi Balance Over Time"
         icon={Wallet03Icon}
         hint="Flexi wallet balances across the selected period"
-        /* The range lives on the chart it draws, as it does on the Overview.
-           It still scopes the deposit and withdrawal figures above, which are
-           period totals rather than balances. */
         actions={
           <Dropdown
             options={options}
@@ -229,8 +194,6 @@ export default function FlexiWalletPage() {
           </div>
         ) : (
           <>
-            {/* One line. Savings and Total live on Overview — keeping all
-                three here re-creates the naming confusion the rename fixed. */}
             <SeriesChart
               data={series?.data ?? []}
               currency={currency}
@@ -275,8 +238,6 @@ export default function FlexiWalletPage() {
             }
           />
 
-          {/* Routes through to the full history rather than paging this
-              panel indefinitely. */}
           <Button variant="soft" size="lg" block className="mt-4" asChild>
             <Link href={ROUTES.finance.transactions}>
               View all

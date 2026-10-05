@@ -36,11 +36,6 @@ query AdminOverviewMetrics($input: AdminCurrencyInput) {
 }
 `;
 
-/*
- * Three lines, and only three. Capital Outflow is a cumulative log of discrete
- * events rather than a balance, so drawing it beside three real balances would
- * imply it behaves like one. It lives in Treasury.
- */
 export const ADMIN_SYSTEM_FUNDS_QUERY = `
 query AdminSystemFunds($input: AdminSeriesInput) {
   adminSystemFunds(input: $input) {

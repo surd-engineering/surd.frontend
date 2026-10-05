@@ -1,19 +1,7 @@
-/**
- * Careers copy and the open-role list.
- *
- * Roles are static data for now; swapping `OPEN_ROLES` for a fetch from an ATS
- * is the only change needed to make the page live.
- *
- * NOTE: the Figma comps read "MMET THE TEAM" and "OPPORTUITIES". Both are
- * spelling slips and are corrected here — see the README.
- */
-
 export type JobSection = {
   id: string;
   title: string;
-  /** Rendered as paragraphs. */
   body?: string[];
-  /** Rendered as a bulleted list. */
   bullets?: string[];
 };
 

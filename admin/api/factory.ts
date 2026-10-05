@@ -27,9 +27,6 @@ function handleSuccess(response: IResponse, message?: string | false) {
 }
 
 function handleError(error: APIError) {
-  /* The session context already says "please sign in again" when a 401 ends
-     the session; a second, red toast for the same event is noise. A 401 with
-     no session behind it — a wrong password — still shows. */
   if (error.code === SESSION_ENDED) return;
   toast({ tone: "danger", message: error.message });
 }
@@ -86,7 +83,6 @@ export function createMutation<TData, TInput = void>(config: {
         return request<TData>(config.document, config.resolver, input);
       },
 
-      /* A retried mutation here is a second withdrawal. */
       retry: false,
 
       onSuccess: (response, input) => {

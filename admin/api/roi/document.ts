@@ -1,10 +1,5 @@
 import { ERROR_FRAGMENT } from "@/api/fragments";
 
-/*
- * Takes a date range, not just a currency: `roi_clawed_back` is the one figure
- * here scoped to the selected period. Wiring only the chart to the period
- * selector left that card reading 0 on a database holding real clawbacks.
- */
 export const ADMIN_ROI_OVERVIEW_QUERY = `
 query AdminROIOverview($input: AdminDateRangeInput) {
   adminROIOverview(input: $input) {

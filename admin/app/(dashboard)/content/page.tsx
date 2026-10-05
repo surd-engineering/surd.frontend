@@ -45,7 +45,6 @@ const PLATFORM_TABS: TabItem[] = [
   { value: ContentPlatform.Website, label: "Website", icon: Globe02Icon },
 ];
 
-
 export default function ContentPage() {
   const [platform, setPlatform] = useState<string>(ContentPlatform.MobileApp);
   const [query, setQuery] = useState("");
@@ -58,8 +57,6 @@ export default function ContentPage() {
   const { can } = usePermissions();
   const mayEdit = can(Permission.ContentManage);
 
-  /* Switching tabs is a refetch, not a client-side filter — omitting
-   * `platform` would mix all three surfaces into one table. */
   const { data, isLoading } = useAdminContents({
     platform: platform as ContentPlatform,
     search: search || undefined,
@@ -99,8 +96,6 @@ export default function ContentPage() {
       id: "enabled",
       header: "Live",
       cell: (row) => (
-        /* A disabled row still sits in this table — it is hidden from the
-           client apps, not from admins. Without this the two look identical. */
         <Switch
           size="sm"
           checked={row.enabled}
@@ -225,8 +220,6 @@ export default function ContentPage() {
         </Tabs>
       </section>
 
-      {/* Both dialogs are mounted per opening, so each starts on the current
-          row rather than on the last draft typed into it. */}
       {edit.isOpen && edit.data ? (
         <EditContentDialog control={edit} row={edit.data} />
       ) : null}
@@ -254,8 +247,6 @@ function EditContentDialog({
   control: ReturnType<typeof useDisclosure<AdminContent>>;
   row: AdminContent;
 }) {
-  /* Opened against the single-row query so the modal never saves over a change
-   * someone else made between the table loading and the admin clicking Edit. */
   const { data } = useAdminContent({ content_id: row.id });
   const entry = data?.data;
 
@@ -284,9 +275,6 @@ function ContentForm({
 
   const save = useAdminUpdateContent({ onSuccess: control.close });
 
-  /* Only what changed is sent: the API writes exactly the fields it receives,
-   * so echoing an untouched language back would overwrite a parallel edit.
-   * Sending nothing but the id is a 400, hence the disabled button. */
   const changed = {
     ...(english !== entry.english ? { english } : {}),
     ...(french !== entry.french ? { french } : {}),
@@ -303,8 +291,6 @@ function ContentForm({
       isSubmitting={save.isPending}
       onConfirm={() => save.mutate({ content_id: entry.id, ...changed })}
     >
-      {/* Read-only: the key is what the client apps look copy up by, so
-          renaming it silently breaks whichever screen references it. */}
       <Field label="Key" hint="Client apps look copy up by this — it cannot be changed.">
         <Input value={entry.key} readOnly />
       </Field>
@@ -342,10 +328,6 @@ const EMPTY_DRAFT = {
   french: "",
 };
 
-/*
- * Not in the mockup, but `content_marketing_items` starts empty — without a way
- * to add a key the page renders blank forever.
- */
 function CreateContentDialog({
   control,
   platform,

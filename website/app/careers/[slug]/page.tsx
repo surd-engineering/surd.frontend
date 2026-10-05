@@ -15,7 +15,6 @@ import {
 import { ApplyDialog } from "@/components/sections/careers/apply-dialog";
 import { EQUAL_OPPORTUNITY, OPEN_ROLES, findJob } from "@/content/careers";
 
-/** Pre-render every role at build time. */
 export function generateStaticParams() {
   return OPEN_ROLES.map((role) => ({ slug: role.slug }));
 }

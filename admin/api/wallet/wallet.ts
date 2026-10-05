@@ -14,11 +14,6 @@ import type {
 } from "@/types/metrics";
 import type { Wallet, WalletFilter, WalletInput } from "@/types/wallet";
 
-/**
- * `data` is a list — one row per currency, nothing converted. Passing
- * `currency` narrows it to a single row rather than changing the shape, so the
- * caller still has to pick the row out of the array.
- */
 export const useAdminWalletOverview = createQuery<
   AdminWalletOverview[],
   AdminDateRangeInput

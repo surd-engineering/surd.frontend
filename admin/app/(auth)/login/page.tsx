@@ -35,7 +35,6 @@ function LoginForm() {
     onSuccess: (response) => {
       const query = new URLSearchParams({ email });
       if (next) query.set("next", next);
-      /* Carry the server's own resend clock rather than guessing at it. */
       if (response.data) {
         query.set("resend", String(response.data.resend_after_seconds));
       }

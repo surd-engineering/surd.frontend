@@ -1,17 +1,6 @@
 import { Container } from "@/components/layout/container";
 import { cn } from "@/lib/cn";
 
-/**
- * Full-bleed hero band with the curved base and masked pattern shapes, used at
- * the top of the FAQ and job pages.
- *
- * The band is pulled up under the sticky header so the nav pill floats on top
- * of it, which is why it has to be the first thing a page renders.
- *
- *   <HeroBand tone="blue" eyebrow={…} title={job.title}>{…}</HeroBand>
- */
-
-/** Written out in full — Tailwind scans source text, so built-up names never generate. */
 const tones = {
   dark: {
     band: "bg-grey-1000",
@@ -19,7 +8,6 @@ const tones = {
     title: "text-white",
     muted: "text-grey-400",
   },
-  /** Light band: the title carries the brand colour, text stays near-black. */
   blue: {
     band: "bg-surd-blue-100",
     shape: "bg-blue-100",
@@ -32,11 +20,9 @@ export type HeroBandTone = keyof typeof tones;
 
 type HeroBandProps = {
   tone?: HeroBandTone;
-  /** Sits above the title: the FAQ icon tile, a role's location and type. */
   eyebrow?: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
-  /** Anything below the description — a search field, a posted date. */
   children?: React.ReactNode;
   className?: string;
 };
@@ -99,8 +85,6 @@ export function HeroBand({
         src="/patterns/star-soft.svg"
         className="top-[37%] -left-24 aspect-square w-52"
       />
-      {/* The space in the export's filename has to stay encoded — CSS `url()`
-          drops the mask entirely if it is left raw. */}
       <HeroShape
         tone={tone}
         src="/patterns/Soft%20Flower.svg"

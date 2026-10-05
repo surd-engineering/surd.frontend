@@ -92,14 +92,6 @@ export interface User {
   role: string | null;
   status: UserStatus;
 
-  /**
-   * Principal balance converted to NGN against the HNI threshold in Platform
-   * Configuration — the same rule as the HNIs tile, so the badge and that count
-   * cannot disagree. `false` when the threshold is unconfigured.
-   *
-   * Resolved on demand and costs a balance aggregate: fine on a detail page,
-   * **never select it on a paginated list** where it is one query per row.
-   */
   is_hni?: boolean;
   address?: Address | null;
   security_setting?: SecuritySetting | null;
@@ -116,15 +108,6 @@ export interface AdminUpdateUserStatusInput {
   reason?: string;
 }
 
-/**
- * The change percentages come from a nightly snapshot, not the users table —
- * `users.status` holds only the current state, so "how many were active a month
- * ago" cannot be reconstructed after the fact.
- *
- * Each is therefore `null` until a baseline exists: about a day for HNIs, about
- * a month for the rest. HNIs is tracked day over day because it moves with
- * balances rather than registrations.
- */
 export interface AdminUsersOverview {
   total_users: number;
   total_users_change_pct_vs_last_month: number | null;
@@ -138,18 +121,10 @@ export interface AdminUsersOverview {
   frozen_users: number;
 }
 
-/**
- * Per currency, **including the plan counts** — a customer may run a naira plan
- * and a dollar plan at once, and a single total would not say which.
- *
- * The array is padded with NGN and USD, so both toggle options always have a
- * row even when the customer holds nothing in one.
- */
 export interface AdminUserBalance {
   currency: Currency;
   active_plans: number;
 
-  /** Matured and broken plans — both are finished. */
   completed_plans: number;
   target_savings: number;
   fixed_deposits: number;
@@ -174,15 +149,9 @@ export interface UserSession {
   last_seen_at: string | null;
 }
 
-/**
- * **Irreversible through the API.** Records a closure request, sets
- * `USER_DELETED`, and revokes every session. For something reversible use
- * `adminUpdateUserStatus` instead.
- */
 export interface AdminCloseUserAccountInput {
   user_id: string;
 
-  /** Optional, but recorded on the closure request for the audit trail. */
   reason?: string;
 }
 

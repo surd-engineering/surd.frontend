@@ -77,10 +77,6 @@ export enum UserStatus {
   Deleted = "DELETED",
 }
 
-/**
- * Named in full by the KYC integration note, prefixes included — the earlier
- * unprefixed set was inferred from the resolver and did not match the wire.
- */
 export enum KycStatus {
   Pending = "KYC_PENDING",
   Processing = "KYC_PROCESSING",
@@ -88,10 +84,6 @@ export enum KycStatus {
   Rejected = "KYC_REJECTED",
 }
 
-/**
- * The two a reviewer may set. `PENDING` and `PROCESSING` return a 400 — a
- * review moves *out* of the queue, never back into it.
- */
 export const KYC_DECISIONS = [KycStatus.Verified, KycStatus.Rejected] as const;
 
 export enum IdDocument {
@@ -208,18 +200,12 @@ export enum BreakdownMode {
   Currency = "CURRENCY",
 }
 
-/** Series bucket width. `DAY` is the server default when omitted. */
 export enum Granularity {
   Day = "DAY",
   Month = "MONTH",
   Year = "YEAR",
 }
 
-/**
- * The six-bucket display taxonomy, derived server-side from `type` and
- * direction. Tables render this; `TransactionType` is storage and never shown.
- * Filtering on it is mutually exclusive with `type` — sending both is a 400.
- */
 export enum TransactionCategory {
   Deposit = "DEPOSIT",
   Withdrawal = "WITHDRAWAL",
@@ -230,7 +216,6 @@ export enum TransactionCategory {
   Other = "OTHER",
 }
 
-/** Required when settling a transaction as CANCELLED, ignored otherwise. */
 export enum CancellationReason {
   SuspectedFraud = "SUSPECTED_FRAUD",
   FailedComplianceCheck = "FAILED_COMPLIANCE_CHECK",
@@ -269,7 +254,6 @@ export type SavingStatus = Extract<
   | RecordStatus.Inactive
 >;
 
-/** One value per admin page. The filter groups these — see `AUDIT_MODULE_GROUPS`. */
 export enum AuditModule {
   Dashboard = "DASHBOARD",
   Finance = "FINANCE",
@@ -292,13 +276,6 @@ export enum AuditModule {
   DeveloperConfig = "DEVELOPER_CONFIG",
 }
 
-/**
- * The sidebar sections the filter offers, each mapped to the modules it covers.
- *
- * The enum is one value per page; the design's picker is one entry per section.
- * `DASHBOARD` sits under Finance so no module can produce a row the picker
- * cannot reach.
- */
 export const AUDIT_MODULE_GROUPS = {
   Finance: [
     AuditModule.Dashboard,
@@ -327,25 +304,17 @@ export const AUDIT_MODULE_GROUPS = {
 
 export type AuditModuleGroup = keyof typeof AUDIT_MODULE_GROUPS;
 
-/**
- * Which section a module belongs to.
- *
- * The Module column prints the group, not the raw value: a filter labelled
- * "Finance" that yields rows labelled "Treasury" reads like a bug.
- */
 export const AUDIT_MODULE_GROUP_OF = Object.fromEntries(
   Object.entries(AUDIT_MODULE_GROUPS).flatMap(([group, modules]) =>
     modules.map((module) => [module, group as AuditModuleGroup]),
   ),
 ) as Record<AuditModule, AuditModuleGroup>;
 
-/** Failures are recorded too — a denied privilege check writes a row. */
 export enum AuditStatus {
   Success = "SUCCESS",
   Failure = "FAILURE",
 }
 
-/** Served from the compiled privilege enum, so it cannot drift from the server. */
 export enum AdminPrivilege {
   UserManagement = "USER_MANAGEMENT",
   KycCompliance = "KYC_COMPLIANCE",
@@ -377,7 +346,6 @@ export enum ContentPlatform {
   Website = "WEBSITE",
 }
 
-/** Intrinsic to the config key — Operating Buffer *is* a percentage. */
 export enum ConfigUnit {
   Percentage = "PERCENTAGE",
   Ngn = "NGN",
@@ -386,31 +354,17 @@ export enum ConfigUnit {
   Days = "DAYS",
 }
 
-/**
- * Derived server-side, so the ROI table's Type column and the rows the filter
- * returns cannot disagree. Null on a row that is not ROI activity.
- *
- * There is deliberately no `CONVERTED`: interest cannot be converted. It has to
- * be withdrawn to Flexi first, at which point it is principal and the
- * withdrawal has already reported as `WITHDRAWN`.
- */
 export enum RoiActivityType {
   Credited = "CREDITED",
   Withdrawn = "WITHDRAWN",
   ClawedBack = "CLAWED_BACK",
 }
 
-/** Which second factor a capital-movement challenge was issued for. */
 export enum ChallengeMethod {
   App = "APP",
   Email = "EMAIL",
 }
 
-/**
- * Capital movement types. The Treasury table's Status badge reads `type`, not
- * `category` — both of these fall into `category: OTHER`, because the
- * six-bucket taxonomy describes *customer* money movement.
- */
 export enum CapitalTransactionKind {
   Outflow = "ADMIN_OUTFLOW",
   Refund = "ADMIN_REFUND",

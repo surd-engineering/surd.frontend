@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-
-/* Dark mode: follows the OS by default; `.dark` / `.light` on <html> override it. */
 @custom-variant dark {
   &:where(.dark, .dark *) {
     @slot;
@@ -13,9 +11,8 @@
   }
 }
 
-
 @theme static {
-  /* ---- Color ---- */
+
   --color-*: initial;
 
   --color-transparent: transparent;
@@ -25,7 +22,6 @@
   --color-white: #ffffff;
   --color-black: #000000;
 
-  /* Brand */
   --color-surd-blue-50: #e6f0ff;
   --color-surd-blue-100: #b0d0ff;
   --color-surd-blue-200: #8ab9ff;
@@ -37,11 +33,10 @@
   --color-surd-blue-800: #00388c;
   --color-surd-blue-900: #002b6b;
 
-  /* Grey */
   --color-grey-10: #fafafa;
   --color-grey-25: #f7f7f7;
   --color-grey-50: #e8e8e8;
-  --color-grey-100: #d9d9d9; /* not on the colour board; used by component borders */
+  --color-grey-100: #d9d9d9;
   --color-grey-150: #cbcbcb;
   --color-grey-200: #bcbcbc;
   --color-grey-300: #9e9e9e;
@@ -55,7 +50,6 @@
   --color-grey-950: #141414;
   --color-grey-1000: #0a0a0a;
 
-  /* Green */
   --color-green-50: #e5fbec;
   --color-green-100: #ccf7d9;
   --color-green-150: #b2f3c7;
@@ -70,7 +64,6 @@
   --color-green-900: #002b0d;
   --color-green-950: #001607;
 
-  /* Aqua */
   --color-aqua-50: #ebfbfc;
   --color-aqua-100: #d7f6f9;
   --color-aqua-150: #c4f2f5;
@@ -85,7 +78,6 @@
   --color-aqua-900: #0b2a2d;
   --color-aqua-950: #061516;
 
-  /* Blue */
   --color-blue-50: #e9f5ff;
   --color-blue-100: #d3ecff;
   --color-blue-150: #bde2ff;
@@ -100,7 +92,6 @@
   --color-blue-900: #072033;
   --color-blue-950: #03101a;
 
-  /* Purple */
   --color-purple-50: #f4eeff;
   --color-purple-100: #eaddff;
   --color-purple-150: #dfccfe;
@@ -115,7 +106,6 @@
   --color-purple-900: #2a1154;
   --color-purple-950: #1d093f;
 
-  /* Pink */
   --color-pink-50: #feedff;
   --color-pink-100: #fcdbff;
   --color-pink-150: #fbc9ff;
@@ -130,7 +120,6 @@
   --color-pink-900: #4a0f4f;
   --color-pink-950: #350839;
 
-  /* Red */
   --color-red-50: #ffebea;
   --color-red-100: #ffd8d6;
   --color-red-150: #ffc4c1;
@@ -145,7 +134,6 @@
   --color-red-900: #390c0a;
   --color-red-950: #200605;
 
-  /* Orange */
   --color-orange-50: #fcf3e5;
   --color-orange-100: #fae7cc;
   --color-orange-150: #f7dbb2;
@@ -160,7 +148,6 @@
   --color-orange-900: #2e1b00;
   --color-orange-950: #170d00;
 
-  /* Yellow */
   --color-yellow-50: #fff7e5;
   --color-yellow-100: #fff0cc;
   --color-yellow-150: #ffe8b2;
@@ -175,129 +162,119 @@
   --color-yellow-900: #332400;
   --color-yellow-950: #1a1200;
 
-  /* ---- Typeface ---- */
   --font-*: initial;
   --font-sans:
     var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, sans-serif;
-  /* Batica Sans is the display/brand face — `font-batica` on headings. */
+
   --font-batica: var(--font-batica-sans), var(--font-sans);
   --font-display: var(--font-batica);
   --font-mono:
     var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* ---- Type scale ----
-     Sizes carry line-height + tracking. Weight is left to `font-*` utilities
-     except on Paragraph (always 400) and Label (always 800). */
   --text-*: initial;
 
-  /* Display */
-  --text-display-lg: 11.25rem; /* 180px */
-  --text-display-lg--line-height: 11.75rem; /* 188px */
+  --text-display-lg: 11.25rem;
+  --text-display-lg--line-height: 11.75rem;
   --text-display-lg--letter-spacing: -0.05em;
-  --text-display-md: 8rem; /* 128px */
-  --text-display-md--line-height: 8.5rem; /* 136px */
+  --text-display-md: 8rem;
+  --text-display-md--line-height: 8.5rem;
   --text-display-md--letter-spacing: -0.04em;
-  --text-display-sm: 6rem; /* 96px */
-  --text-display-sm--line-height: 6.5rem; /* 104px */
+  --text-display-sm: 6rem;
+  --text-display-sm--line-height: 6.5rem;
   --text-display-sm--letter-spacing: -0.03em;
 
-  /* Heading */
-  --text-heading-2xl: 4.5rem; /* 72px */
-  --text-heading-2xl--line-height: 5rem; /* 80px */
+  --text-heading-2xl: 4.5rem;
+  --text-heading-2xl--line-height: 5rem;
   --text-heading-2xl--letter-spacing: -0.02em;
-  --text-heading-xl: 3.75rem; /* 60px */
-  --text-heading-xl--line-height: 4.25rem; /* 68px */
+  --text-heading-xl: 3.75rem;
+  --text-heading-xl--line-height: 4.25rem;
   --text-heading-xl--letter-spacing: -0.018em;
-  --text-heading-lg: 3rem; /* 48px */
-  --text-heading-lg--line-height: 3.5rem; /* 56px */
+  --text-heading-lg: 3rem;
+  --text-heading-lg--line-height: 3.5rem;
   --text-heading-lg--letter-spacing: -0.016em;
-  --text-heading-md: 2.25rem; /* 36px */
-  --text-heading-md--line-height: 2.75rem; /* 44px */
+  --text-heading-md: 2.25rem;
+  --text-heading-md--line-height: 2.75rem;
   --text-heading-md--letter-spacing: -0.014em;
-  --text-heading-sm: 1.875rem; /* 30px */
-  --text-heading-sm--line-height: 2.375rem; /* 38px */
+  --text-heading-sm: 1.875rem;
+  --text-heading-sm--line-height: 2.375rem;
   --text-heading-sm--letter-spacing: -0.013em;
-  --text-heading-xs: 1.5rem; /* 24px */
-  --text-heading-xs--line-height: 2rem; /* 32px */
+  --text-heading-xs: 1.5rem;
+  --text-heading-xs--line-height: 2rem;
   --text-heading-xs--letter-spacing: -0.012em;
 
-  /* Text — UI copy, buttons, table cells, form labels */
-  --text-2xl: 1.5rem; /* 24px */
-  --text-2xl--line-height: 2rem; /* 32px */
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
   --text-2xl--letter-spacing: -0.012em;
-  --text-xl: 1.25rem; /* 20px */
-  --text-xl--line-height: 1.75rem; /* 28px */
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
   --text-xl--letter-spacing: -0.01em;
-  --text-lg: 1.125rem; /* 18px */
-  --text-lg--line-height: 1.5rem; /* 24px */
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.5rem;
   --text-lg--letter-spacing: -0.008em;
-  --text-md: 1rem; /* 16px */
-  --text-md--line-height: 1.375rem; /* 22px */
+  --text-md: 1rem;
+  --text-md--line-height: 1.375rem;
   --text-md--letter-spacing: -0.007em;
-  --text-sm: 0.875rem; /* 14px */
-  --text-sm--line-height: 1.25rem; /* 20px */
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
   --text-sm--letter-spacing: -0.006em;
-  --text-xs: 0.75rem; /* 12px */
-  --text-xs--line-height: 1rem; /* 16px */
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
   --text-xs--letter-spacing: -0.005em;
-  --text-2xs: 0.625rem; /* 10px */
-  --text-2xs--line-height: 0.875rem; /* 14px */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
   --text-2xs--letter-spacing: -0.004em;
 
-  /* Paragraph — long-form prose, always Regular with a 1.6 leading */
-  --text-paragraph-2xl: 1.5rem; /* 24px */
+  --text-paragraph-2xl: 1.5rem;
   --text-paragraph-2xl--line-height: 1.6;
   --text-paragraph-2xl--letter-spacing: 0em;
   --text-paragraph-2xl--font-weight: 400;
-  --text-paragraph-xl: 1.25rem; /* 20px */
+  --text-paragraph-xl: 1.25rem;
   --text-paragraph-xl--line-height: 1.6;
   --text-paragraph-xl--letter-spacing: 0em;
   --text-paragraph-xl--font-weight: 400;
-  --text-paragraph-lg: 1.125rem; /* 18px */
+  --text-paragraph-lg: 1.125rem;
   --text-paragraph-lg--line-height: 1.6;
   --text-paragraph-lg--letter-spacing: 0em;
   --text-paragraph-lg--font-weight: 400;
-  --text-paragraph-md: 1rem; /* 16px */
+  --text-paragraph-md: 1rem;
   --text-paragraph-md--line-height: 1.6;
   --text-paragraph-md--letter-spacing: 0em;
   --text-paragraph-md--font-weight: 400;
-  --text-paragraph-sm: 0.875rem; /* 14px */
+  --text-paragraph-sm: 0.875rem;
   --text-paragraph-sm--line-height: 1.6;
   --text-paragraph-sm--letter-spacing: 0em;
   --text-paragraph-sm--font-weight: 400;
-  --text-paragraph-xs: 0.75rem; /* 12px */
+  --text-paragraph-xs: 0.75rem;
   --text-paragraph-xs--line-height: 1.6;
   --text-paragraph-xs--letter-spacing: 0em;
   --text-paragraph-xs--font-weight: 400;
 
-  /* Label — eyebrows and overlines. ExtraBold, 10% tracking, set uppercase. */
-  --text-label-2xl: 1.25rem; /* 20px */
-  --text-label-2xl--line-height: 1.75rem; /* 28px */
+  --text-label-2xl: 1.25rem;
+  --text-label-2xl--line-height: 1.75rem;
   --text-label-2xl--letter-spacing: 0.1em;
   --text-label-2xl--font-weight: 800;
-  --text-label-xl: 1.125rem; /* 18px */
-  --text-label-xl--line-height: 1.5rem; /* 24px */
+  --text-label-xl: 1.125rem;
+  --text-label-xl--line-height: 1.5rem;
   --text-label-xl--letter-spacing: 0.1em;
   --text-label-xl--font-weight: 800;
-  --text-label-lg: 1rem; /* 16px */
-  --text-label-lg--line-height: 1.375rem; /* 22px */
+  --text-label-lg: 1rem;
+  --text-label-lg--line-height: 1.375rem;
   --text-label-lg--letter-spacing: 0.1em;
   --text-label-lg--font-weight: 800;
-  --text-label-md: 0.875rem; /* 14px */
-  --text-label-md--line-height: 1.25rem; /* 20px */
+  --text-label-md: 0.875rem;
+  --text-label-md--line-height: 1.25rem;
   --text-label-md--letter-spacing: 0.1em;
   --text-label-md--font-weight: 800;
-  --text-label-sm: 0.75rem; /* 12px */
-  --text-label-sm--line-height: 1rem; /* 16px */
+  --text-label-sm: 0.75rem;
+  --text-label-sm--line-height: 1rem;
   --text-label-sm--letter-spacing: 0.1em;
   --text-label-sm--font-weight: 800;
-  --text-label-xs: 0.625rem; /* 10px */
-  --text-label-xs--line-height: 0.875rem; /* 14px */
+  --text-label-xs: 0.625rem;
+  --text-label-xs--line-height: 0.875rem;
   --text-label-xs--letter-spacing: 0.1em;
   --text-label-xs--font-weight: 800;
 
-  /* ---- Elevation ---- */
   --shadow-*: initial;
   --shadow-xs: 0 1px 2px 0 rgb(23 23 23 / 0.05);
   --shadow-sm:
@@ -310,9 +287,6 @@
     0 8px 8px -4px rgb(23 23 23 / 0.03), 0 20px 24px -4px rgb(23 23 23 / 0.08);
   --shadow-2xl: 0 24px 48px -12px rgb(23 23 23 / 0.18);
 
-  /* ---- Focus rings ----
-     Applied as a box-shadow so they stack cleanly on top of borders:
-       focus-visible:shadow-ring-primary focus-visible:outline-none */
   --shadow-ring-primary: 0 0 0 4px rgb(0 102 255 / 0.25);
   --shadow-ring-brand: 0 0 0 4px rgb(79 70 229 / 0.25);
   --shadow-ring-black: 0 0 0 4px rgb(42 47 65 / 0.25);
@@ -323,8 +297,6 @@
   --shadow-ring-success: 0 0 0 4px rgb(34 197 94 / 0.25);
   --shadow-ring-destructive: 0 0 0 4px rgb(239 68 68 / 0.25);
 
-  /* ---- Blur ----
-     `blur-*` blurs the layer itself, `backdrop-blur-*` blurs what's behind it. */
   --blur-*: initial;
   --blur-xs: 4px;
   --blur-sm: 8px;
@@ -332,33 +304,25 @@
   --blur-lg: 32px;
   --blur-xl: 64px;
 
-  /* ---- Border Radius ---- */
-  --radius-xs: 0.125rem; /* 2px */
-  --radius-sm: 0.25rem; /* 4px */
-  --radius-md: 0.375rem; /* 6px */
-  --radius-lg: 0.5rem; /* 8px */
-  --radius-xl: 0.75rem; /* 12px */
-  --radius-2xl: 1rem; /* 16px */
-  --radius-3xl: 1.5rem; /* 24px */
-  --radius-4xl: 2rem; /* 32px */
-  --radius-5xl: 2.5rem; /* 40px */
-  --radius-6xl: 3rem; /* 48px */
-  --radius-7xl: 5rem; /* 64px */
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+  --radius-6xl: 3rem;
+  --radius-7xl: 5rem;
 
-  /* ---- Icon sizing (Hugeicons) ---- */
-  --size-icon-xs: 1rem; /* 16px */
-  --size-icon-sm: 1.25rem; /* 20px */
-  --size-icon-md: 1.5rem; /* 24px */
-  --size-icon-lg: 2rem; /* 32px */
-  --size-icon-xl: 2.5rem; /* 40px */
+  --size-icon-xs: 1rem;
+  --size-icon-sm: 1.25rem;
+  --size-icon-md: 1.5rem;
+  --size-icon-lg: 2rem;
+  --size-icon-xl: 2.5rem;
 }
 
-/* --------------------------------------------------------------------------
-   2. Semantic tokens
-   What components should actually reference. The grey ramp mirrors between
-   themes exactly as the Figma color board shows it: grey-10 is the lightest
-   surface in light mode and the darkest surface in dark mode.
-   -------------------------------------------------------------------------- */
 :root {
   --background: var(--color-grey-10);
   --background-subtle: var(--color-grey-25);
@@ -499,8 +463,6 @@
   color-scheme: dark;
 }
 
-/* Expose the semantic tokens as Tailwind color utilities. `inline` keeps the
-   var() reference in the utility so it re-resolves when the theme flips. */
 @theme inline {
   --color-background: var(--background);
   --color-background-subtle: var(--background-subtle);
@@ -545,9 +507,6 @@
   --color-info-subtle-foreground: var(--info-subtle-foreground);
 }
 
-/* --------------------------------------------------------------------------
-   3. Base
-   -------------------------------------------------------------------------- */
 @layer base {
   * {
     border-color: var(--border);
@@ -573,24 +532,11 @@
   }
 }
 
-/* --------------------------------------------------------------------------
-   4. Utilities
-   -------------------------------------------------------------------------- */
-
-/* `font-batica` comes from --font-batica in the theme block above; pair it with
-   the usual font-medium / font-bold / font-extrabold weight utilities. */
-
-/* --------------------------------------------------------------------------
-   5. Motion
-   -------------------------------------------------------------------------- */
-
-/* Radix sets --radix-accordion-content-height so panels can animate to auto. */
 @theme static {
   --animate-accordion-down: accordion-down 200ms ease-out;
   --animate-accordion-up: accordion-up 200ms ease-out;
   --animate-marquee: marquee 32s linear infinite;
-  /* The testimonial cards are much wider than the goal pills, so the same
-     travel distance needs a longer turn to read at the same speed. */
+
   --animate-marquee-slow: marquee 70s linear infinite;
 }
 
@@ -599,7 +545,7 @@
     transform: translateX(0);
   }
   to {
-    /* The track holds two identical passes, so half a turn wraps seamlessly. */
+
     transform: translateX(-50%);
   }
 }
@@ -632,12 +578,6 @@
     scroll-behavior: auto !important;
   }
 
-  /* The loading shimmer (lib/image-placeholder.ts) is an SVG that next/image
-     sets as the image's own background, and the rule above cannot reach into
-     it — a background SVG animates in its own context, which never sees this
-     preference. Drop the artwork and leave the flat panel behind instead. The
-     selector matches the sweep's class name inside the encoded data URL, and
-     stops matching the moment next/image clears the placeholder. */
   img[style*="sweep"] {
     background-image: none !important;
     background-color: rgb(128 128 128 / 0.14);

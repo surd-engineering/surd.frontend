@@ -91,18 +91,10 @@ function matchRole(role: string | null | undefined): AdminRole | null {
     : null;
 }
 
-/**
- * Whether this role gets into the console at all.
- *
- * Unlike `toAdminRole` it never falls back: an unknown or missing role is a
- * no, not a Viewer. Using `toAdminRole` here would admit every account, since
- * it answers with a real role for any input.
- */
 export function isAdminRole(role: string | null | undefined): boolean {
   return matchRole(role) !== null;
 }
 
-/** The role's permissions, defaulting to the least privileged set. */
 export function toAdminRole(role: string | null | undefined): AdminRole {
   return matchRole(role) ?? FALLBACK_ROLE;
 }

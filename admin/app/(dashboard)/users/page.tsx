@@ -45,12 +45,6 @@ import { Currency, SortDirection, UserStatus, UserTier } from "@/types/enum";
 import type { AdminUserSummary } from "@/types/user";
 import { useCurrency } from "@/contexts/currency";
 
-/*
- * The three the design offers, not the seven the enum holds. `PENDING`,
- * `INACTIVE` and `DELETED` are lifecycle states nobody filters a customer list
- * by, and `FROZEN` has no card to pair with — the overview counts it, but the
- * menu in the mock stops at Closed.
- */
 const STATUS_OPTIONS: FilterOption[] = [
   { value: "", label: "All users" },
   { value: UserStatus.Active, label: "Active" },
@@ -58,7 +52,6 @@ const STATUS_OPTIONS: FilterOption[] = [
   { value: UserStatus.Closed, label: "Closed" },
 ];
 
-/* Labelled "Level 0–3" in the menu; sent as `TIER_ZERO`…`TIER_THREE`. */
 const TIER_OPTIONS: FilterOption[] = [
   { value: "", label: "All levels" },
   ...Object.values(UserTier).map((tier, index) => ({
@@ -67,12 +60,6 @@ const TIER_OPTIONS: FilterOption[] = [
   })),
 ];
 
-/**
- * Both currencies, stacked — the design shows them together rather than
- * following the platform toggle, because an account's naira and dollar
- * holdings are separate pots and a single converted figure would say which
- * neither. The toggle still drives the balance *filter*, which needs one unit.
- */
 function MoneyCell({ ngn, usd }: { ngn: number; usd: number }) {
   return (
     <span className="flex flex-col tabular-nums">
@@ -97,9 +84,6 @@ export default function UsersPage() {
   const { currency } = useCurrency();
   const search = useDebounced(query);
 
-  /* The same groups Treasury and the ledger build from — one money ladder and
-     one set of date windows across every table, so a band labelled the same on
-     two screens is the same band. */
   const filterGroups: FilterGroup[] = [
     { id: "status", label: "Status", options: STATUS_OPTIONS },
     { id: "tier", label: "KYC Level", options: TIER_OPTIONS },
@@ -135,12 +119,6 @@ export default function UsersPage() {
     setPage(1);
   };
 
-  /*
-   * No User ID column. The mock shows `USR-8842`, but the real `id` is a UUID
-   * and there is no short human-readable id on the record — rendering the UUID
-   * would fill a column with something nobody can read or repeat. The row is
-   * clickable instead, and search still matches a pasted id exactly.
-   */
   const columns: Column<AdminUserSummary>[] = [
     {
       id: "name",
@@ -157,16 +135,11 @@ export default function UsersPage() {
     {
       id: "status",
       header: "Status",
-      /* No HNI badge here: `is_hni` is resolved on demand and costs a balance
-         aggregate, so on a paginated list it is one query per row. The detail
-         page shows it. */
       cell: (user) => <StatusBadge  status={formatEnum(user.status)} />,
     },
     {
       id: "balance",
       header: "Total Balance",
-      /* Principal only — flex plus fixed plus target. Interest is a separate
-         earnings balance, reported as ROI on the detail page. */
       cell: (user) => (
         <MoneyCell ngn={user.total_balance_ngn} usd={user.total_balance_usd} />
       ),
@@ -221,9 +194,6 @@ export default function UsersPage() {
           )}
           hint="Accounts in good standing"
         />
-        {/* No delta: the overview carries a change percentage for closed
-            accounts but none for suspensions, and inventing one would be a
-            number nobody can reconcile. */}
         <StatCard
           label="Suspended"
           value={loadingCards ? "…" : formatCount(cards?.suspended_users)}
@@ -234,8 +204,6 @@ export default function UsersPage() {
           label="HNIs"
           value={loadingCards ? "…" : formatCount(cards?.hnis)}
           icon={Crown02Icon}
-          /* Day over day, because it moves with balances rather than
-             registrations. */
           delta={formatChange(cards?.hnis_change_pct_vs_yesterday, "from yesterday")}
           hint="Accounts above the HNI threshold in Platform Configuration"
         />

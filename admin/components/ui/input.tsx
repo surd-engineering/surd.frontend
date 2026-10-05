@@ -8,8 +8,6 @@ import { cn } from "@/lib/cn"
 import { InformationCircleIcon } from "@hugeicons/core-free-icons"
 import { Icon } from "@/components/ui/icon"
 
-
-
 const inputVariants = cva(
     "flex w-full rounded-lg border border-grey-25 text-sm transition-colors bg-grey-25 file:text-sm file:font-medium placeholder:text-grey-400 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&.invalid]:border-red-500 [&.invalid]:bg-red-50",
     {
@@ -113,7 +111,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                     {leftIcon && !prefix && (
                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-grey-600">
                             {leftIcon}
-                             {/* [&_svg]:size-5 */}
                         </div>
                     )}
 

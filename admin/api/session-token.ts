@@ -95,7 +95,6 @@ export function clearToken(reason: ExpiryReason = "signout") {
   try {
     sessionStorage.clear();
   } catch {
-    /* Storage can be unavailable (private mode, blocked cookies) - ignore. */
   }
 
   announce(reason);

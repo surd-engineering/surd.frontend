@@ -18,7 +18,7 @@ export type LegalDocument = {
 };
 
 const INTRO_BODY = [
-  "These terms of service, in conjunction with our privacy policy (accessible at https://www.surd.ng/privacy-notice), and any additional agreements you may have entered with us, constitute a legally binding contract between you and SURD. By navigating our site or engaging in transactions, you are participating in our services and agree to abide by the ensuing terms. Applicable to all site users, these terms apply universally.",
+  "These terms of service, in conjunction with our privacy policy (accessible at https://www.surd.finance/privacy-policy), and any additional agreements you may have entered with us, constitute a legally binding contract between you and SURD. By navigating our site or engaging in transactions, you are participating in our services and agree to abide by the ensuing terms. Applicable to all site users, these terms apply universally.",
 ];
 
 const DEFINITION_BODY = [

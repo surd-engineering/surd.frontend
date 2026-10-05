@@ -76,7 +76,6 @@ type DialogProps = {
   icon?: IconSvgElement;
   children?: React.ReactNode;
   confirmLabel?: string;
-  /** Trails the confirm label — "Send invite" carries a paper plane. */
   confirmIcon?: IconSvgElement;
   cancelLabel?: string;
   onConfirm?: () => void;

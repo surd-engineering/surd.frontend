@@ -6,11 +6,6 @@ import {
   TRANSACTION_FIELDS,
 } from "@/api/fragments";
 
-/*
- * `savings_funding` and `roi_withdrawals` were removed, not renamed — they
- * repeated numbers the Savings and ROI modules already own. `net_flow` took
- * their slot.
- */
 export const ADMIN_TRANSACTION_OVERVIEW_QUERY = `
 query AdminTransactionOverview($input: AdminDateRangeInput) {
   adminTransactionOverview(input: $input) {
@@ -33,10 +28,6 @@ query AdminTransactionOverview($input: AdminDateRangeInput) {
 }
 `;
 
-/*
- * Completed transactions only. Generates a PDF and returns a public link;
- * point the download button at `url`.
- */
 export const TRANSACTION_RECEIPT_QUERY = `
 query TransactionReceipt($input: TransactionFilterInput!) {
   transactionReceipt(input: $input) {

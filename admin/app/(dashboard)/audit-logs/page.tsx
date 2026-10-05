@@ -38,11 +38,6 @@ const GROUP_ICONS: Record<AuditModuleGroup, IconSvgElement> = {
   Settings: Settings02Icon,
 };
 
-/*
- * The picker offers the four sidebar sections; the enum is one value per page.
- * Picking a section sends every module inside it, so the filter and the Module
- * column agree on what "Finance" means.
- */
 const GROUP_OPTIONS = (
   Object.keys(AUDIT_MODULE_GROUPS) as AuditModuleGroup[]
 ).map((group) => ({
@@ -50,7 +45,6 @@ const GROUP_OPTIONS = (
   label: group,
   icon: <Icon icon={GROUP_ICONS[group]} size={16} className="text-grey-400" />,
 }));
-
 
 export default function AuditLogsPage() {
   const [query, setQuery] = useState("");
@@ -76,8 +70,6 @@ export default function AuditLogsPage() {
     limit: pageSize,
   });
 
-  /* The picker's own search filters this list in place, so it is fetched once
-   * rather than re-queried per keystroke. The chosen ids go into `admin_ids`. */
   const { data: adminList } = useAdminAccounts({ paginate: false });
 
   const adminOptions = (adminList?.data ?? []).map((admin) => ({
@@ -110,8 +102,6 @@ export default function AuditLogsPage() {
     {
       id: "module",
       header: "Module",
-      /* The group, not the raw value — a filter labelled "Finance" that
-         returns rows labelled "Treasury" reads like a bug. */
       cell: (row) => AUDIT_MODULE_GROUP_OF[row.module] ?? row.module,
     },
     {
@@ -127,8 +117,6 @@ export default function AuditLogsPage() {
     {
       id: "status",
       header: "Status",
-      /* Not in the design, but "admin login failed ×12" is the entry an
-         auditor most wants and is otherwise indistinguishable from a success. */
       cell: (row) => (
         <Badge
           tone={row.status === AuditStatus.Failure ? "danger" : "success"}
@@ -249,7 +237,6 @@ export default function AuditLogsPage() {
   );
 }
 
-/* The API stores the raw user agent; the table shows what a person can read. */
 function DeviceCell({ agent }: { agent: string }) {
   const parsed = parseUserAgent(agent);
   if (!parsed) return <span className="text-grey-400">—</span>;

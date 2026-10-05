@@ -2,12 +2,6 @@ import Image from "next/image";
 import { Button, type ButtonSize } from "@/components/ui/button";
 import { cn } from "@/lib/cn";
 
-/**
- * The recurring call to action: a label, a hairline divider, then the two
- * store glyphs. It appears in the header, the footer and most page sections,
- * so the composition lives here rather than being rebuilt each time.
- */
-
 export const STORES = [
   { src: "/icons/play-store.svg", alt: "Google Play" },
   { src: "/icons/app-store.svg", alt: "App Store" },

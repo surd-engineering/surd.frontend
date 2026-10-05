@@ -69,15 +69,6 @@ import { Permission } from "@/types/permission";
 import type { Transaction } from "@/types/transaction";
 import { useCurrency } from "@/contexts/currency";
 
-/*
- * The Type filter is `category`, the display taxonomy — not `type`, which is
- * the storage enum. Driving both the column and the filter from it means they
- * can never disagree, and it is a strict partition: the six buckets sum to the
- * unfiltered total, so "none selected" and "all selected" return the same set.
- *
- * `ROI_CLAWBACK` is filter-only: a clawback has no row of its own, it rides on
- * the break settlement that triggered it, which reports as `WITHDRAWAL`.
- */
 const CATEGORY_OPTIONS = [
   { value: TransactionCategory.Deposit, label: "Deposit" },
   { value: TransactionCategory.Withdrawal, label: "Withdrawal" },
@@ -108,17 +99,11 @@ const TX_FILTERS: FilterGroup[] = [
   {
     id: "category",
     label: "Type",
-    /* The display taxonomy, not `type` — sending both is a 400 rather than a
-       merge, and `category` is what the column renders. */
     options: [{ value: "", label: "All types" }, ...CATEGORY_OPTIONS],
   },
   { id: "amount", label: "Amount", options: AMOUNT_OPTIONS },
-  /* No custom range here: the header's period control already bounds this
-     table, and a second, wider window inside the menu would silently override
-     it. The other tables have no such header, so they get the picker. */
   { id: "date", label: "Date", options: DATE_WINDOW_OPTIONS },
 ];
-
 
 export default function TransactionsPage() {
   const { currency } = useCurrency();
@@ -138,27 +123,20 @@ export default function TransactionsPage() {
   });
 
   const { data, isLoading } = useTransactions({
-    /* An explicit Currency pick beats the platform toggle — the admin who asked
-       for USD meant it. */
     currency: (filters.currency as Currency) ?? currency,
     search: search || undefined,
-    /* One category at a time: the input takes a single value, and sending it
-     * alongside `type`/`types` is a 400 rather than a merge. */
     ...(filters.category
       ? { category: filters.category as TransactionCategory }
       : {}),
     ...(filters.status ? { statuses: [filters.status as TransactionStatus] } : {}),
     ...amountBounds(filters.amount),
     sort,
-    /* Same precedence: the Date filter, else the header's period. */
     ...(filters.date ? dateBounds(filters.date) : { start_date: range.start_date }),
     page,
     limit: pageSize,
     paginate: true,
   });
 
-  /* One row per currency, nothing converted — match on `currency` rather than
-   * trusting the position. */
   const cards =
     overview?.data?.find((row) => row.currency === currency) ?? overview?.data?.[0];
 
@@ -205,10 +183,6 @@ export default function TransactionsPage() {
     {
       id: "flow",
       header: "Flow",
-      /* Both sides are derived server-side and come back human-readable, so
-         every screen labels the same movement identically. Render directly. */
-      /* Each side gets its own column and wraps on its own — "Card Payment"
-         beside "Flexi Wallet" on one line pushes every other column right. */
       cell: (row) =>
         row.flow ? (
           <span className="flex items-center gap-2">
@@ -242,9 +216,6 @@ export default function TransactionsPage() {
               className="w-34 rounded-lg border-grey-50"
             />
 
-            {/* The same two-step flow Treasury owns, opened from the ledger the
-                movement lands in. One dialog, so a second entry point cannot
-                grow a different set of guard rails. */}
             <Can do={Permission.TreasuryMove}>
               <Button
                 tone="primary"
@@ -260,12 +231,6 @@ export default function TransactionsPage() {
         }
       />
 
-      {/*
-        These four answer different questions and are not meant to reconcile:
-        volume counts every posting except CONVERT — ROI payouts, tax, internal
-        credits — while deposits and withdrawals are the two that net. The gap
-        between them is real.
-      */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Total TXs Volume"
@@ -275,8 +240,6 @@ export default function TransactionsPage() {
               : formatCompactMoney(cards?.total_transaction_volume, currency)
           }
           icon={ArrowUpDownIcon}
-          /* A rate, not a movement — it has no direction to colour, so it is a
-             note rather than a delta. */
           note={
             loadingCards
               ? undefined
@@ -307,7 +270,6 @@ export default function TransactionsPage() {
           label="Net Flow"
           value={loadingCards ? "…" : formatCompactMoney(cards?.net_flow, currency)}
           icon={ExchangeIcon}
-          /* Negative when the platform paid out more than it took in. */
           note={
             cards && cards.net_flow < 0 ? "Paid out more than taken in" : undefined
           }
@@ -384,8 +346,6 @@ function TransactionDrawer({
   control: ReturnType<typeof useDisclosure<Transaction>>;
   row: Transaction;
 }) {
-  /* Opened against the detail query, which carries the fields the table does
-   * not select — balances either side, the invoice breakdown and the rate. */
   const { data, isLoading } = useTransaction({ transaction_id: row.id });
   const entry = data?.data ?? row;
 
@@ -402,8 +362,6 @@ function TransactionDrawer({
         </div>
       ) : (
         <div className="flex flex-col gap-6">
-          {/* The headline: what happened, for how much, and when. Everything
-              below it is the evidence. */}
           <div className="flex flex-col items-center gap-3 text-center">
             <ReceiptIllustration />
             <StatusBadge status={formatEnum(entry.status)} size="md" />
@@ -421,8 +379,6 @@ function TransactionDrawer({
             </p>
 
             <dl className="flex flex-col divide-y divide-grey-50 px-4">
-              {/* The one place an id belongs: a support lookup starts here, and
-                  it is a field to copy rather than a column to scan. */}
               <Row label="Transaction ID" value={entry.reference || entry.id} />
               <Row label="Type" value={formatEnum(entry.category)} />
               {entry.flow ? (
@@ -447,8 +403,6 @@ function TransactionDrawer({
               />
               <Row label="Amount" value={formatMoney(entry.amount, entry.currency)} />
               <Row label="Fee" value={formatMoney(entry.fees, entry.currency)} />
-              {/* `amount` excludes fees by definition — `total` is what the
-                  customer was actually charged, computed server-side. */}
               <Row
                 label="Total"
                 value={formatMoney(entry.total, entry.currency)}
@@ -465,7 +419,6 @@ function TransactionDrawer({
               ) : null}
               <Row label="Narration" value={entry.remark || "—"} />
               <Row label="Method" value={formatEnum(entry.method)} />
-              {/* What makes a dispute traceable. */}
               <Row
                 label="Balance before"
                 value={formatMoney(entry.pre_balance, entry.currency)}
@@ -499,11 +452,6 @@ function TransactionDrawer({
   );
 }
 
-/*
- * The receipt is generated on request rather than with the drawer — it produces
- * a PDF, so opening a row should not mint one nobody asked for. Completed
- * transactions only.
- */
 function ReceiptButton({ transaction }: { transaction: Transaction }) {
   const [requested, setRequested] = useState(false);
 
@@ -524,8 +472,6 @@ function ReceiptButton({ transaction }: { transaction: Transaction }) {
   }
 
   return (
-    /* One button, as the design has it — the PDF is still only minted on the
-       click, so opening a row does not produce a document nobody asked for. */
     <Button
       tone="primary"
       size="xl"
@@ -546,7 +492,6 @@ function Row({
 }: {
   label: string;
 
-  /** A component, so a row can carry the customer rather than their name. */
   value: React.ReactNode;
   strong?: boolean;
 }) {

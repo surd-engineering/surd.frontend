@@ -80,10 +80,6 @@ export const useAdminUpdateUserStatus = createMutation<
   invalidates: ["users", "kyc", "metrics"],
 });
 
-/*
- * Irreversible through the API: it records a closure request, sets
- * USER_DELETED, and revokes every session. The confirmation modal says so.
- */
 export const useAdminCloseUserAccount = createMutation<
   never,
   AdminCloseUserAccountInput

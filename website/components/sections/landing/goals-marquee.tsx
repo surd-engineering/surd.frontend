@@ -1,13 +1,5 @@
 import { SAVINGS_GOALS } from "@/content/landing";
 
-/**
- * Continuously scrolling ribbon of things people save for.
- *
- * The list is rendered twice so the track can translate a full 50% and wrap
- * seamlessly. The copy is hidden from assistive tech; the first pass carries
- * the meaning. The animation stops under `prefers-reduced-motion` via the
- * global override in globals.css.
- */
 export function GoalsMarquee() {
   return (
     <section

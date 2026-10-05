@@ -5,26 +5,12 @@ import { MinusSignIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/cn";
 
-/**
- * Single-open accordion used by the FAQ sections.
- *
- * Radix supplies the open/close behaviour, keyboard support and ARIA wiring;
- * the trigger swaps a + for a − and the open item takes the brand fill, as in
- * the design.
- *
- *   <Accordion items={faqs} defaultValue={faqs[0].id} />
- */
-
 export type AccordionEntry = {
   id: string;
   question: string;
   answer: string;
 };
 
-/**
- * Class strings are written out in full — Tailwind scans source text, so a
- * name built by interpolation would never be generated.
- */
 const tones = {
   light: {
     root: "",
@@ -33,7 +19,6 @@ const tones = {
     chip: "bg-primary text-white group-data-[state=open]:bg-white/20",
     answer: "text-grey-500 group-data-[state=open]:text-white/90",
   },
-  /** On the dark band the open row lifts to a grey card instead of the brand fill. */
   dark: {
     root: "border border-dashed border-grey-800",
     item: "border-b border-dashed border-grey-800 last:border-b-0 data-[state=open]:bg-grey-800",

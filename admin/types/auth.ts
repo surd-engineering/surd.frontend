@@ -4,7 +4,6 @@ export interface AdminLoginInput {
   email: string;
 }
 
-/** What `adminLogin` hands back: the emailed code's clock. */
 export interface AdminLoginChallenge {
   resend_after_seconds: number;
   expires_at: string;

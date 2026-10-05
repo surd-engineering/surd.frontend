@@ -17,7 +17,6 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
             refetchOnWindowFocus: true,
             refetchOnReconnect: true,
             retry: (failureCount, error) => {
-              // The server answered. It will answer the same way next time.
               if (isAPIError(error)) return false;
               return failureCount < 2;
             },

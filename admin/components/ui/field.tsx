@@ -7,7 +7,6 @@ type FieldProps = React.ComponentProps<"div"> & {
   error?: string;
   required?: boolean;
 
-  /** Renders "(Optional)" beside the label, as the capital dialogs do. */
   optional?: boolean;
 };
 

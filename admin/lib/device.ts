@@ -1,13 +1,3 @@
-/**
- * What the browser will actually tell us about the machine.
- *
- * Less than you would hope: no browser reports a manufacturer or model for a
- * desktop, so there is no "MacBook Pro" or "HP EliteBook" to read. The only
- * model string on offer is `userAgentData.getHighEntropyValues(["model"])`,
- * and that is populated on Android alone. What follows is the honest ceiling:
- * the platform and the browser.
- */
-
 function platformName(): string {
   if (typeof navigator === "undefined") return "Unknown device";
 
@@ -27,10 +17,6 @@ function platformName(): string {
   return "Unknown device";
 }
 
-/*
- * Order matters here, because these user agents lie about each other: Edge and
- * Opera both claim Chrome, and Chrome claims Safari. Most specific first.
- */
 function browserName(): string {
   if (typeof navigator === "undefined") return "Browser";
 
@@ -45,7 +31,6 @@ function browserName(): string {
   return "Browser";
 }
 
-/** Something a person would recognise in a session list: "Mac · Chrome". */
 export function deviceName(): string {
   return `${platformName()} · ${browserName()}`;
 }
@@ -58,12 +43,6 @@ function timeZone(): string {
   }
 }
 
-/**
- * Everything the login-session row wants, in one call.
- *
- * `device_id` carries the same label as `device_name` — the backend takes the
- * description for both, so there is no separate identifier to mint.
- */
 export function deviceContext() {
   const name = deviceName();
 

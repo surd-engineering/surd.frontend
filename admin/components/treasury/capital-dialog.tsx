@@ -23,42 +23,20 @@ import {
   type CapitalTransactionChallenge,
 } from "@/types/treasury";
 
-/*
- * Shared because two screens open it: Treasury owns capital movements, and the
- * Transactions ledger offers the same action from its header. One definition
- * means the second entry point cannot drift into a different set of guard
- * rails from the first.
- */
 const OUTFLOW_REASONS = [
   { value: "EXTERNAL_INVESTMENT", label: "External investment" },
   { value: "OPERATIONAL_EXPENSE", label: "Operational expense" },
   { value: "OTHER", label: "Other" },
 ];
 
-/*
- * Required on both movements: NGN and USD are separate books with separate
- * ceilings, so one without a currency has no pool to draw from. It rides in
- * the Amount row rather than taking a field of its own — an amount and its
- * unit are one answer.
- */
 const CURRENCY_OPTIONS = CURRENCIES.map((entry) => ({
   value: entry.value,
   label: entry.label,
   icon: <Flag code={entry.country} size="sm" />,
 }));
 
-/* The filled, borderless control both dialogs use. */
 const CONTROL = "h-14 rounded-xl border-transparent bg-grey-25 px-4 text-md font-medium";
 
-/**
- * Both capital movements are two-step: initiate, then confirm with a second
- * factor. The challenge decides which prompt the second step shows.
- *
- * Every guard rail — insufficient funds, the configured ceiling, refunding more
- * than was taken — refuses at *confirm* time, after the code is accepted. Each
- * refusal names the limit it hit, and the factory's error toast surfaces that
- * message, so nothing is caught here.
- */
 export function CapitalDialog({
   control,
   kind,
@@ -71,14 +49,10 @@ export function CapitalDialog({
   const [challenge, setChallenge] = useState<CapitalTransactionChallenge | null>(null);
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState<Currency>(initialCurrency);
-  /* No default: the design shows the placeholder, and a pre-picked reason is
-     one an admin can submit without ever having chosen it. */
   const [reason, setReason] = useState("");
   const [description, setDescription] = useState("");
   const [code, setCode] = useState("");
 
-  /* Set only once the server has actually recorded the movement, so the
-     success state cannot be reached by a confirm that was refused. */
   const [done, setDone] = useState(false);
 
   const isOutflow = kind === "outflow";
@@ -89,8 +63,6 @@ export function CapitalDialog({
   const initiateRefund = useInitiateCapitalRefund({
     onSuccess: (response) => setChallenge(response.data ?? null),
   });
-  /* The challenge carries the figure the server settled on, which is what the
-     receipt should quote — not the amount typed into the form. */
   const recorded = () => setDone(true);
 
   const confirmOutflow = useConfirmCapitalOutflow({ onSuccess: recorded });
@@ -211,8 +183,6 @@ export function CapitalDialog({
           />
         </Field>
       ) : (
-        /* Only the refund captures a narration: the outflow records *why* as a
-           reason code, which is the thing the ledger can group and report on. */
         <Field
           label="Description"
           htmlFor="capital-description"
@@ -232,8 +202,6 @@ export function CapitalDialog({
       )}
 
       {currency === Currency.USD && isOutflow ? (
-        /* Not in the mock, but it is the difference between a refusal an admin
-           understands and one that looks like a bug. */
         <p className="text-xs text-grey-500">
           While the USD ceiling is unset, the NGN cap converted at the live FX
           rate is enforced instead. So a USD outflow can still be refused.

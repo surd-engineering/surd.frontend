@@ -1,10 +1,5 @@
 import type { AccordionEntry } from "@/components/ui/accordion";
 
-/**
- * FAQ content, grouped by category. The category list drives both the sidebar
- * on `/faqs` and the condensed accordion on the landing page.
- */
-
 export const FAQ_HERO = {
   title: "Frequently Asked Questions",
   body: "Have a question? We’ve got answers! Browse through our most commonly asked questions below. If you still can’t find what you’re looking for, feel free to reach out to our team—we’re always happy to help.",
@@ -140,5 +135,4 @@ export const FAQ_CATEGORIES: FaqCategory[] = [
   },
 ];
 
-/** The short list used in the landing page FAQ block. */
 export const LANDING_FAQS = FAQ_CATEGORIES[0].items;

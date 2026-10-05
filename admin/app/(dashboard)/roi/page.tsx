@@ -66,24 +66,6 @@ import type { Transaction } from "@/types/transaction";
 import { useCurrency } from "@/contexts/currency";
 import { toTitleCase } from "@/lib/utils";
 
-/*
- * FIXME(api): the design has a Type filter, but `TransactionFilterInput`
- * exposes no `roi_activity_type` field. Filtering the fetched page client-side
- * would contradict the server's pagination total — 3 rows shown against
- * "200 results" — so the column renders the type and the filter is left out
- * until the input supports it.
- *
- * Note it would have three options, not the redesign's four: interest cannot
- * be converted. It must be withdrawn to Flexi first, at which point it is
- * principal and has already reported as WITHDRAWN.
- */
-
-/*
- * Keyed, not positional: the resolver is free to return the three products in
- * any order, and a donut whose colours reshuffle between refetches is worse
- * than one whose colours are merely unfamiliar. Blue, green, orange — the same
- * three the Savings donut uses, and in the design's order.
- */
 const PRODUCT_COLORS: Record<string, string> = {
   FIXED_SAVE: SERIES_COLORS.flexi,
   TARGET_SAVE: "#3fc75a",
@@ -109,17 +91,12 @@ const CURRENCY_OPTIONS: FilterOption[] = [
   })),
 ];
 
-/* No Type group: `TransactionFilterInput` has no `roi_activity_type`, per the
-   note above. The column renders it; the menu cannot filter on it yet. */
 const ROI_FILTERS: FilterGroup[] = [
   { id: "status", label: "Status", options: STATUS_OPTIONS },
   { id: "currency", label: "Currency", options: CURRENCY_OPTIONS },
   { id: "amount", label: "Amount", options: AMOUNT_OPTIONS },
-  /* No custom range: the page header already bounds this table, and a second
-     wider window inside the menu would silently override it. */
   { id: "date", label: "Date", options: DATE_WINDOW_OPTIONS },
 ];
-
 
 export default function RoiPage() {
   const { currency } = useCurrency();
@@ -132,9 +109,6 @@ export default function RoiPage() {
   const productRange = useDateRange("12m");
   const search = useDebounced(query);
 
-  /* The period selector feeds this query, not only the chart: `roi_clawed_back`
-   * is scoped to the range, and wiring it to today alone left the card reading
-   * zero on a database that held real clawbacks. */
   const { data: overview, isLoading: loadingCards } = useAdminRoiOverview({
     currency,
     start_date: range.start_date,
@@ -151,26 +125,18 @@ export default function RoiPage() {
   });
 
   const { data: rows, isLoading: loadingRows } = useTransactions({
-    /* Must stay set alongside every other filter, or the query widens to the
-     * whole ledger. */
     roi_activity: true,
-    /* An explicit Currency pick beats the platform toggle — the admin who
-       asked for USD activity meant it. */
     currency: (filters.currency as Currency) ?? currency,
     search: search || undefined,
     ...(filters.status ? { statuses: [filters.status as TransactionStatus] } : {}),
     ...amountBounds(filters.amount),
     sort,
-    /* The Date filter, else the header's period — the same precedence the
-       ledger uses, so the two controls cannot silently fight. */
     ...(filters.date ? dateBounds(filters.date) : { start_date: range.start_date }),
     page,
     limit: pageSize,
     paginate: true,
   });
 
-  /* One row per currency, nothing converted — match on `currency` rather than
-   * trusting the position. */
   const reset = <T,>(setter: (value: T) => void) => (value: T) => {
     setter(value);
     setPage(1);
@@ -179,8 +145,6 @@ export default function RoiPage() {
   const cards =
     overview?.data?.find((row) => row.currency === currency) ?? overview?.data?.[0];
 
-  /* The slices are reconciled server-side to the headline, so percentages
-   * against either give the same number. */
   const slices = (byProduct?.data ?? []).map((item, index) => ({
     name: item.label,
     value: item.amount,
@@ -192,8 +156,6 @@ export default function RoiPage() {
     {
       id: "amount",
       header: "Amount",
-      /* On a clawback row this is the withdrawal amount, not the interest
-         reversed — `roi_clawback_amount` carries that. */
       cell: (row) => (
         <span className="flex flex-col">
           <span className="font-semibold tabular-nums">
@@ -220,8 +182,6 @@ export default function RoiPage() {
     },
     {
       id: "plan",
-      /* The plan's id was a UUID and told nobody anything; what an admin reads
-         this column for is which product the interest came off. */
       header: "Plan",
       cell: (row) =>
         row.savings_template ? formatEnum(row.savings_template) : "—",
@@ -271,13 +231,11 @@ export default function RoiPage() {
           label="Total ROI Liability"
           value={loadingCards ? "…" : formatCompactMoney(cards?.total_roi_liability, currency)}
           icon={AnalyticsUpIcon}
-          /* Absolute, not a percentage. */
           delta={formatAbsoluteChange(cards?.total_roi_liability_change_today, currency)}
           hint="Every credited, unwithdrawn earnings balance. Point-in-time."
         />
         <StatCard
           label="ROI Generated Today"
-          /* Null until a start-of-day snapshot exists — a dash, not zero. */
           value={
             loadingCards
               ? "…"
@@ -310,13 +268,10 @@ export default function RoiPage() {
             cards?.roi_clawed_back_change_pct_vs_previous_period,
             "vs previous period",
           )}
-          /* Note the absent "Today" — this one follows the period selector. */
           hint="Interest reversed by early plan breaks, over the selected period"
         />
       </div>
 
-      {/* Equal halves, composition first: "what is the liability made of"
-          before "how is it moving". */}
       <div className="grid gap-4 xl:grid-cols-2">
         <Panel
           title="ROI by Product"
@@ -339,13 +294,8 @@ export default function RoiPage() {
             </div>
           ) : (
             <>
-              {/* Every slice is badged here, not just the leader: three
-                  products within an order of magnitude of each other read as a
-                  split, and the split is the point of the panel. */}
               <FundsBreakdownChart data={slices} currency={currency} badges="all" />
 
-              {/* Across, not down — the donut sits above it at full width, so
-                  the legend has the whole panel to lay the three out in. */}
               <ul className="grid gap-4 sm:grid-cols-3">
                 {slices.map((slice) => (
                   <li key={slice.name} className="flex flex-col gap-2">

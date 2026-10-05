@@ -27,7 +27,6 @@ export const useAdminContents = createQuery<
   paginated: true,
 });
 
-/* The modal opens against this rather than a possibly-stale table row. */
 export const useAdminContent = createQuery<AdminContent, AdminContentInput>({
   resolver: "adminContent",
   document: ADMIN_CONTENT_QUERY,

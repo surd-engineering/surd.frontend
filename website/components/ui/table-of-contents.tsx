@@ -3,16 +3,6 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 
-/**
- * Sticky "on this page" navigation.
- *
- * Highlights the section currently in view using an IntersectionObserver
- * rather than scroll maths, so it stays accurate as sections resize.
- *
- * Entries may nest one level, which is what the legal pages use for their
- * "1.1 Definitions" sub-items.
- */
-
 export type TocEntry = {
   id: string;
   label: string;
@@ -46,7 +36,6 @@ export function TableOfContents({
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
         if (visible[0]) setActiveId(visible[0].target.id);
       },
-      /* Trigger once a heading reaches the upper third of the viewport. */
       { rootMargin: "-88px 0px -66% 0px", threshold: 0 },
     );
 

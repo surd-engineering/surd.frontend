@@ -18,11 +18,6 @@ import type {
 } from "@/types/metrics";
 import type { Saving, SavingFilterInput } from "@/types/savings";
 
-/**
- * `data` is a list — one row per currency, nothing converted. Passing
- * `currency` narrows it to a single row rather than changing the shape, so the
- * caller still has to pick the row out of the array.
- */
 export const useAdminSavingsOverview = createQuery<
   AdminSavingsOverview[],
   AdminDateRangeInput
@@ -32,11 +27,6 @@ export const useAdminSavingsOverview = createQuery<
   scope: "savings",
 });
 
-/**
- * Flat, unlike `adminFundsBreakdown`: `ResponseWithAdminBreakdown` returns the
- * items themselves rather than a list of mode-keyed groups, so there is no
- * group to unwrap here.
- */
 export const useAdminSavingsByType = createQuery<
   AdminBreakdownItem[],
   AdminDateRangeInput

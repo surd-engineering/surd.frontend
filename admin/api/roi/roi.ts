@@ -13,11 +13,6 @@ import type {
   AdminRoiOverview,
 } from "@/types/metrics";
 
-/**
- * `data` is a list — one row per currency, nothing converted. Passing
- * `currency` narrows it to a single row rather than changing the shape, so the
- * caller still has to pick the row out of the array.
- */
 export const useAdminRoiOverview = createQuery<
   AdminRoiOverview[],
   AdminDateRangeInput

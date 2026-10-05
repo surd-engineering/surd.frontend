@@ -6,11 +6,6 @@ import {
   USER_SESSION_FIELDS,
 } from "@/api/fragments";
 
-/*
- * `is_hni` is deliberately not selected here. It is resolved on demand and
- * costs a balance aggregate, so on a paginated list it is one extra query per
- * row. The detail page selects it; this does not.
- */
 export const ADMIN_USERS_QUERY = `
 query AdminUsers($input: AdminUsersFilterInput) {
   adminUsers(input: $input) {

@@ -150,11 +150,6 @@ export function DataTable<T>({
         </table>
       </div>
 
-      {/* Every one of these tables is wider than its panel, and the only sign
-          of that today is the cut-off column at the right edge. The indicator
-          reports the position rather than driving it — the table itself is the
-          scroll surface, and a second draggable control competing with it is a
-          bug waiting to happen. */}
       {scroll.scrollable ? (
         <div
           aria-hidden
@@ -185,13 +180,6 @@ export function DataTable<T>({
   );
 }
 
-/**
- * How much of the table is on screen, and where that window sits.
- *
- * `ratio` is the visible fraction and doubles as the "is there anything to
- * scroll" test; `offset` is 0 at the left edge and 1 at the right, so the thumb
- * lands flush at both ends rather than stopping short of the second.
- */
 function useHorizontalScroll(
   ref: React.RefObject<HTMLDivElement | null>,
   rowCount: number,
@@ -215,8 +203,6 @@ function useHorizontalScroll(
     update();
     element.addEventListener("scroll", update, { passive: true });
 
-    /* Columns can change width after the rows land — an avatar loading, a long
-       reference — so the width is watched rather than measured once. */
     const observer = new ResizeObserver(update);
     observer.observe(element);
 
@@ -325,10 +311,6 @@ const arrowClass = cn(
   "disabled:pointer-events-none disabled:opacity-40",
 );
 
-/**
- * Seven slots at most, and the last two pages are always reachable — the design
- * shows `1 2 3 … 9 10`, so the head is three wide rather than five.
- */
 function buildPageNumbers(page: number, totalPages: number): number[] {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, index) => index + 1);

@@ -5,22 +5,9 @@ import { ArrowDown01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/cn";
 
-/**
- * Pill-shaped select, used for the filters above lists.
- *
- * Radix supplies the popover, typeahead, keyboard support and ARIA wiring; the
- * trigger is styled as a bordered pill with a chevron that flips when open, as
- * in the design.
- *
- *   <Select label="Department" value={value} options={DEPARTMENTS} onValueChange={setValue} />
- *
- * Options may be plain strings when the label doubles as the value.
- */
-
 export type SelectOption = { label: string; value: string };
 
 type SelectProps = {
-  /** Accessible name for the trigger; not shown. */
   label: string;
   value: string;
   options: readonly (SelectOption | string)[];

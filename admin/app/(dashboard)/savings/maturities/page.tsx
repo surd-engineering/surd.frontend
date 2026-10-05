@@ -32,13 +32,8 @@ import {
 } from "@/types/enum";
 import { useCurrency } from "@/contexts/currency";
 
-/** What the Upcoming Maturities card counts, so the two agree on open. */
 const DEFAULT_WINDOW = "30";
 
-/*
- * The empty value is the group's "All", which here means every future
- * maturity rather than none — `ending_after` still floors the query at now.
- */
 const WINDOW_OPTIONS: FilterOption[] = [
   { value: "", label: "All upcoming" },
   { value: "30", label: "Next 30 days" },
@@ -55,33 +50,15 @@ const CURRENCY_OPTIONS: FilterOption[] = [
   })),
 ];
 
-/*
- * No Status or Type group. The page *is* "fixed deposits, still active" — the
- * same three constraints the card's figure is built from — and a menu that
- * could relax them would quietly break the one guarantee this drill-down
- * makes, that its rows add up to the number that sent you here.
- */
 const FILTER_GROUPS: FilterGroup[] = [
   { id: "currency", label: "Currency", options: CURRENCY_OPTIONS },
   { id: "window", label: "Maturity window", options: WINDOW_OPTIONS },
 ];
 
-/**
- * The drill-down behind the Upcoming Maturities card.
- *
- * It runs the same query the card's figure comes from — fixed deposits, still
- * active, ending inside the window — so the count on the card and the rows here
- * cannot disagree. The window is shown as a chip rather than baked in silently,
- * because a page headed "Upcoming Maturities" that quietly hides everything
- * maturing on day 31 is the kind of thing an admin only discovers by accident.
- */
 export default function SavingsMaturitiesPage() {
   const { currency } = useCurrency();
   const [query, setQuery] = useState("");
 
-  /* The chip and the Maturity window group are one piece of state, so the chip
-     reads out whatever the menu last set rather than being a second control
-     that can contradict it. */
   const [filters, setFilters] = useState<Record<string, string | undefined>>({
     window: DEFAULT_WINDOW,
   });
@@ -105,8 +82,6 @@ export default function SavingsMaturitiesPage() {
   }, [days]);
 
   const { data, isLoading } = useSavings({
-    /* An explicit Currency pick beats the platform toggle — the admin who
-       asked for USD maturities meant it. */
     currency: (filters.currency as Currency) ?? currency,
     search: search || undefined,
     templates: [SavingsTemplate.FixedSave],
@@ -152,16 +127,11 @@ export default function SavingsMaturitiesPage() {
               value={filters}
               onChange={reset(setFilters)}
             />
-            {/* No Sort by: `SavingFilterInput` takes no sort field, so the
-                control would have nothing to send. */}
           </>
         }
         bleed
       >
         <div className="flex flex-col gap-4 px-4 pb-5 sm:px-5">
-          {/* Removable, and it is the only thing standing between this page and
-              every future maturity — dismissing it widens the list rather than
-              clearing it to nothing. */}
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-primary">Filter:</span>
             {days == null ? (

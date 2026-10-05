@@ -1,11 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { contentSecurityPolicy } from "@/lib/csp";
 
-/*
- * Issues a fresh nonce per request. Next.js reads it back out of the request's
- * CSP header while rendering and stamps it on every script it emits, so the
- * policy can refuse inline scripts without refusing the framework's own.
- */
+
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const policy = contentSecurityPolicy(nonce);

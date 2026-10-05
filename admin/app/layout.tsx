@@ -9,11 +9,7 @@ export const metadata: Metadata = {
   description: "SURD admin dashboard",
 };
 
-/*
- * Async and awaiting the request so every route renders per request: the CSP
- * nonce only exists at request time, and a page prerendered at build carries
- * no nonce, so its scripts would be blocked and it would never hydrate.
- */
+
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   await connection();
 

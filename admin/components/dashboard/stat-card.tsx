@@ -33,14 +33,6 @@ const noteTones = {
 
 export type NoteTone = keyof (typeof noteTones)["onLight"];
 
-/**
- * The colour for a server-sent health verdict.
- *
- * These cards carry `net_capital_position_status` and `liquidity_status`, which
- * are the verdict on the number beside them. Painting every one green would
- * report a breached platform as healthy, so an unrecognised value stays
- * neutral rather than defaulting to reassuring.
- */
 export function healthTone(status: string | null | undefined): NoteTone {
   if (!status) return "neutral";
 
@@ -79,12 +71,6 @@ type StatCardProps = {
   value: string;
   delta?: StatDelta;
 
-  /**
-   * A qualifier that belongs to the figure but is not part of it — the plan
-   * count beside a maturities total, "₦57.0M (15)". Set in the same line so it
-   * cannot be mistaken for a second metric, and dimmed so it cannot be
-   * mistaken for the figure.
-   */
   suffix?: string;
 
   note?: string;
@@ -92,7 +78,6 @@ type StatCardProps = {
   icon?: IconSvgElement;
   hint?: string;
 
-  /** Takes the delta's place when a card leads somewhere instead of moving. */
   footer?: React.ReactNode;
 };
 
@@ -121,7 +106,6 @@ export function StatCard({
             />
           ) : null}
         </div>
-
 
         <p className="text-heading-sm font-bold text-grey-900">
           {value}

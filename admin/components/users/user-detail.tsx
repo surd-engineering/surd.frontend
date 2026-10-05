@@ -107,17 +107,9 @@ export function UserDetail({ userId }: { userId: string }) {
 
   const user = profile?.data;
 
-  /*
-   * Everything is per currency, **including the plan counts** — a customer may
-   * run a naira plan and a dollar plan at once, and a single total would not
-   * say which. The array is padded with both, so a row always exists.
-   */
   const balances = overview?.data?.balances;
   const balance = balances?.find((row) => row.currency === currency);
 
-  /* Padded with NGN and USD by the resolver, so this is two rows on every
-     account. Falling back to those two keeps the switch drawn while the
-     overview is still in flight. */
   const currencies = balances?.length
     ? balances.map((row) => row.currency)
     : [Currency.NGN, Currency.USD];
@@ -164,13 +156,8 @@ export function UserDetail({ userId }: { userId: string }) {
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-heading-xs font-extrabold text-grey-900">{name}</h1>
               <StatusBadge status={formatEnum(user.status)} />
-              {/* Same rule as the HNIs tile, so the badge and that count
-                  cannot disagree. Costs a balance aggregate — fine here. */}
               {user.is_hni ? <HniBadge /> : null}
             </div>
-            {/* The mock puts a short id here. The record has none — `id` is a
-                UUID — so the email stands in: it is the handle a human uses to
-                identify a customer anyway. */}
             <p className="text-md text-grey-500">{user.email}</p>
           </div>
         </div>
@@ -255,21 +242,6 @@ export function UserDetail({ userId }: { userId: string }) {
   );
 }
 
-/* ── Balances ─────────────────────────────────────────────────────────── */
-
-/**
- * The design puts an NGN/USD switch on every balance card. It is wired to the
- * platform currency context rather than to four pieces of local state, so
- * flipping one card flips them all — four cards that could each be showing a
- * different unit, above four header figures showing a fifth, is a screen an
- * admin cannot read a total off. The switch still *sets* the context, so the
- * control is live wherever the design draws it.
- *
- * The options are the currencies this customer's overview actually came back
- * with — the array is padded with NGN and USD, so both always have a row — and
- * not the platform's whole currency list. A GBP pill over a figure the resolver
- * never returns is a control that can only ever show a dash.
- */
 function CurrencySwitch({ currencies }: { currencies: Currency[] }) {
   const { currency, setCurrency } = useCurrency();
 
@@ -340,8 +312,6 @@ function BalanceCard({
         </div>
       </div>
 
-      {/* One dash per currency the card can show, the wide one being the one in
-          view — the same indicator the tables use for a scroll position. */}
       <div className="flex items-center justify-center gap-1.5">
         {currencies.map((option) => (
           <span
@@ -400,8 +370,6 @@ function BalancesTab({
   );
 }
 
-/* ── Profile ──────────────────────────────────────────────────────────── */
-
 function ProfileTab({ user }: { user: User }) {
   const address = user.address
     ? [
@@ -434,8 +402,6 @@ function ProfileTab({ user }: { user: User }) {
     </Panel>
   );
 }
-
-/* ── Account ──────────────────────────────────────────────────────────── */
 
 function DocumentChip({
   label,
@@ -475,8 +441,6 @@ function AccountTab({ user, userId }: { user: User; userId: string }) {
   const preview = useDisclosure<string>();
 
   const { data: kycData } = useAdminKyc({ user_id: userId });
-  /* One row is all this needs — the tab shows "last login", and the Login
-     History tab owns the full list. */
   const { data: sessions } = useAdminUserSessions({
     user_id: userId,
     limit: 1,
@@ -501,10 +465,6 @@ function AccountTab({ user, userId }: { user: User; userId: string }) {
   );
 
   const fields: DetailField[] = [
-    /* FIXME(api): the mock shows a bank and a virtual account number, and
-       neither is on the `User` record or reachable from this page. Rendered as
-       a dash rather than borrowed from `Saving.account_number`, which is a
-       per-plan number and would be a different thing wearing this label. */
     { label: "Bank", value: "—", icon: BankIcon },
     { label: "Virtual Account number", value: "—", icon: BankIcon },
     {
@@ -535,8 +495,6 @@ function AccountTab({ user, userId }: { user: User; userId: string }) {
   );
 }
 
-/* ── Transactions ─────────────────────────────────────────────────────── */
-
 const TX_STATUS_OPTIONS: FilterOption[] = [
   { value: "", label: "All statuses" },
   ...Object.values(TransactionStatus).map((status) => ({
@@ -564,8 +522,6 @@ const TX_CURRENCY_OPTIONS: FilterOption[] = [
 
 const TX_FILTER_GROUPS: FilterGroup[] = [
   { id: "status", label: "Status", options: TX_STATUS_OPTIONS },
-  /* The display taxonomy, not `type` — sending both is a 400 rather than a
-     merge, and `category` is what the column renders. */
   { id: "category", label: "Type", options: TX_CATEGORY_OPTIONS },
   { id: "currency", label: "Currency", options: TX_CURRENCY_OPTIONS },
 ];
@@ -612,7 +568,6 @@ function TransactionsTab({ userId }: { userId: string }) {
     {
       id: "amount",
       header: "Amount",
-      /* Excludes fees by definition — `total` is what the customer paid. */
       cell: (row) => (
         <span className="font-semibold tabular-nums">
           {formatMoney(row.amount, row.currency)}
@@ -629,10 +584,6 @@ function TransactionsTab({ userId }: { userId: string }) {
     {
       id: "flow",
       header: "Flow",
-      /* Both sides are derived server-side and come back human-readable, so
-         every screen labels the same movement identically. Each side gets its
-         own half and wraps on its own — "Card Payment" beside "Flexi Wallet"
-         on one line pushes every other column right. */
       cell: (row) =>
         row.flow ? (
           <span className="flex items-center gap-2">
@@ -704,15 +655,11 @@ function TransactionsTab({ userId }: { userId: string }) {
   );
 }
 
-/* ── Savings plans ────────────────────────────────────────────────────── */
-
 const PLAN_TABS: TabItem[] = [
   { value: SavingsTemplate.TargetSave, label: "Target Savings" },
   { value: SavingsTemplate.FixedSave, label: "Fixed Deposits" },
 ];
 
-/* `interest + interest_accrued` — the same sum the ROI module totals from, so
-   a plan row and the ROI page cannot disagree about what this account earned. */
 function roiEarned(plan: Saving) {
   return (plan.interest ?? 0) + (plan.interest_accrued ?? 0);
 }
@@ -729,9 +676,6 @@ const CURRENCY_COLUMN: Column<Saving> = {
   cell: (row) => <CurrencyChip currency={row.currency as never} />,
 };
 
-/* `balance`, not `amount_saved`. The latter is gross-ever-deposited and never
-   decreases, so it overstates a partially-withdrawn plan and stops the column
-   reconciling against the Total Savings Balance card. */
 const SAVED_COLUMN: Column<Saving> = {
   id: "balance",
   header: "Amount Saved",
@@ -755,9 +699,6 @@ const ROI_COLUMN: Column<Saving> = {
 const STARTED_COLUMN: Column<Saving> = {
   id: "started",
   header: "Started",
-  /* `started_at` is null until the plan actually funds; `created_at` is when
-     the customer set it up. The design's "Started" is the former where it
-     exists. */
   cell: (row) => formatTimestamp(row.started_at ?? row.created_at),
   width: "min-w-32",
 };
@@ -776,7 +717,6 @@ const TARGET_COLUMNS: Column<Saving>[] = [
   {
     id: "target",
     header: "Target Amount",
-    /* Null on a plan saved without a goal — the customer just saves. */
     cell: (row) =>
       row.target_amount == null ? (
         <span className="text-grey-400">—</span>
@@ -820,9 +760,6 @@ const FIXED_COLUMNS: Column<Saving>[] = [
   {
     id: "break",
     header: "Break Fee",
-    /* What breaking early cost: the interest the settlement took back. Zero on
-       every plan that ran its term, so a dash rather than a ₦0 that reads like
-       a fee was charged and waived. */
     cell: (row) =>
       row.interest_forfeited ? (
         <span className="tabular-nums">
@@ -914,20 +851,12 @@ function PlansTab({ userId }: { userId: string }) {
   );
 }
 
-/* ── KYC ──────────────────────────────────────────────────────────────── */
-
 type KycDocumentRow = {
   id: string;
   label: string;
   url: string | null;
 };
 
-/**
- * The API keeps one KYC record per customer, not one row per document — BVN,
- * NIN and the uploaded ID all live on the same row with a single status. The
- * design's table is that record unfolded, so a document the customer never
- * supplied is absent rather than present-and-empty.
- */
 function documentRows(kyc: Kyc): KycDocumentRow[] {
   const rows: KycDocumentRow[] = [];
 
@@ -944,8 +873,6 @@ function documentRows(kyc: Kyc): KycDocumentRow[] {
   return rows;
 }
 
-/* Only a decided review has been reviewed — a pending one has an `updated_at`
-   from the customer's own last edit, which is not a review date. */
 const DECIDED = [KycStatus.Verified, KycStatus.Rejected];
 
 function KycTab({ userId }: { userId: string }) {
@@ -1013,8 +940,6 @@ function KycTab({ userId }: { userId: string }) {
             View
           </button>
         ) : (
-          /* BVN and NIN are verified against the registry — there is no image
-             to open, so there is nothing to link to. */
           <span className="text-grey-400">—</span>
         ),
     },
@@ -1029,8 +954,6 @@ function KycTab({ userId }: { userId: string }) {
             columns={columns}
             getRowId={(row) => row.id}
             minWidth="min-w-3xl"
-            /* At most three rows, one per thing the record can hold — paging
-               a list that cannot reach a second page is furniture. */
             pagination={false}
             emptyState={
               <TableEmptyState
@@ -1064,8 +987,6 @@ function DocumentPreviewDialog({
     </Dialog>
   );
 }
-
-/* ── Login history ────────────────────────────────────────────────────── */
 
 function LoginsTab({ userId }: { userId: string }) {
   const { page, setPage, pageSize, setPageSize } = useTablePage();
@@ -1144,12 +1065,6 @@ function LoginsTab({ userId }: { userId: string }) {
   );
 }
 
-/*
- * Irreversible through the API: it records a closure request, sets
- * USER_DELETED, and revokes every session — which is what the modal promises.
- * `reason` is optional but recorded on the closure request, so it is worth
- * capturing rather than leaving blank.
- */
 function CloseAccountDialog({
   control,
   userId,

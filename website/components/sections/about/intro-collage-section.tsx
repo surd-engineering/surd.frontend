@@ -43,8 +43,6 @@ export function IntroCollageSection() {
           <div
             className={`${CELL} col-span-2 aspect-[4/3] lg:col-span-1 lg:row-span-2 lg:aspect-auto`}
           >
-            {/* Imported rather than referenced by path so the build can derive
-                the blur-up thumbnail each photo fades in from. */}
             <Image
               src={friendsPhoto}
               alt="Two women laughing together at a garden celebration"

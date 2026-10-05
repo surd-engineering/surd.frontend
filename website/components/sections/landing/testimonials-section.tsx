@@ -4,15 +4,6 @@ import { Section, SectionHeading } from "@/components/layout/section";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { TESTIMONIALS, TESTIMONIALS_INTRO } from "@/content/landing";
 
-/**
- * Quotes on a track that drifts to the left on its own and runs off the right
- * edge of the container, so the next card is always peeking in.
- *
- * Like the goals ribbon, the list is rendered twice so the track can translate
- * a full 50% and wrap seamlessly; the second pass is hidden from assistive
- * tech. The animation stops under `prefers-reduced-motion` via the global
- * override in globals.css, and pauses on hover so a quote can be read.
- */
 export function TestimonialsSection() {
   return (
     <Section spacing="md">

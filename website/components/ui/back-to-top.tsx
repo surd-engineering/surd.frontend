@@ -4,12 +4,6 @@ import { ArrowUp02Icon } from "@hugeicons/core-free-icons";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/cn";
 
-/**
- * Floating "back to top" pill used on the long reading pages.
- *
- * Scrolls to the document start, respecting the reduced-motion preference via
- * the global `scroll-behavior` override in globals.css.
- */
 export function BackToTop({ className }: { className?: string }) {
   return (
     <button

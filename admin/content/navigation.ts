@@ -69,12 +69,6 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
         permission: Permission.FinanceView,
         icon: MoneyBag02Icon,
       },
-      // {
-      //   label: "Vault",
-      //   href: ROUTES.finance.vault,
-      //   permission: Permission.FinanceView,
-      //   icon: SecurityLockIcon,
-      // },
       {
         label: "Treasury",
         href: ROUTES.finance.treasury,

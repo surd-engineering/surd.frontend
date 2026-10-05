@@ -16,11 +16,6 @@ import type {
   TransactionFilterInput,
 } from "@/types/transaction";
 
-/**
- * `data` is a list — one row per currency, nothing converted. Passing
- * `currency` narrows it to a single row rather than changing the shape, so the
- * caller still has to pick the row out of the array.
- */
 export const useAdminTransactionOverview = createQuery<
   AdminTransactionOverview[],
   AdminDateRangeInput
@@ -45,10 +40,6 @@ export const useTransaction = createQuery<Transaction, TransactionFilterInput>({
   enabled: (input) => Boolean(input?.transaction_id || input?.reference),
 });
 
-/*
- * Fetched on demand rather than with the drawer: it generates a PDF, so
- * opening a row should not produce one nobody asked for.
- */
 export const useTransactionReceipt = createQuery<never, TransactionFilterInput>({
   resolver: "transactionReceipt",
   document: TRANSACTION_RECEIPT_QUERY,

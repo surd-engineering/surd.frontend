@@ -32,11 +32,6 @@ export interface Kyc {
   updated_at: string;
 }
 
-/**
- * `user` is resolved lazily and is nullable — a KYC row whose account was since
- * removed degrades to a null cell rather than nulling the whole row. Omit it
- * from the selection set and no lookup runs.
- */
 export interface KycWithUser extends Kyc {
   user?: User | null;
 }
@@ -45,7 +40,6 @@ export interface AdminKycOverview {
   pending_reviews: number;
   closed_accounts: number;
 
-  /** Still pending and older than `sla_hours`. */
   stuck_reviews: number;
   rejected_reviews: number;
   suspended_accounts: number;
@@ -58,7 +52,6 @@ export interface AdminUpdateKycStatusInput {
   user_id?: string;
   kyc_id?: string;
 
-  /** Only `KYC_VERIFIED` and `KYC_REJECTED` are accepted — see `KYC_DECISIONS`. */
   status: KycStatus;
 
   reason?: string;

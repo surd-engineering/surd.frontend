@@ -42,11 +42,6 @@ const tooltipStyle = {
   fontSize: 12,
 } as const;
 
-/*
- * Buckets come back sorted with gaps filled, and never run past the current
- * one, so the last point is partial rather than missing — no padding needed
- * here and no reason to drop the tail.
- */
 function tickDate(value: string) {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
@@ -62,24 +57,12 @@ type SeriesChartProps<T> = {
   data: T[];
   currency?: Currency | string;
 
-  /** `dataKey` → legend label, in draw order. */
   series: { key: keyof T & string; name: string; color: string }[];
   height?: string;
 
-  /**
-   * Treasury plots two shares of total system funds rather than amounts, which
-   * is what lets them share one 0–100% axis. Everything else is money.
-   */
   unit?: "money" | "percent";
 };
 
-/**
- * One line per series over a date axis.
- *
- * Amounts arrive as real figures rather than pre-scaled millions, so the axis
- * and the tooltip both format through `formatCompactMoney` — that keeps a naira
- * chart and a dollar chart honest without a second component.
- */
 export function SeriesChart<T extends { date: string }>({
   data,
   currency = "NGN",
@@ -137,14 +120,6 @@ export function SeriesChart<T extends { date: string }>({
   );
 }
 
-/**
- * One bar per bucket, with the tallest picked out.
- *
- * A maturity timeline is read for "when is the wall", so the peak carries the
- * full brand colour and the rest sit back in a tint — the shape of the series
- * is the answer, and colouring every bar identically makes the reader measure
- * them against the axis instead.
- */
 export function BarSeriesChart<T extends { date: string }>({
   data,
   currency = "NGN",
@@ -199,8 +174,6 @@ export function BarSeriesChart<T extends { date: string }>({
             {data.map((point, index) => (
               <Cell
                 key={`${point.date}-${index}`}
-                /* Ties keep every tied bar highlighted — an arbitrary winner
-                   would move on a refetch that changed nothing. */
                 fill={
                   peak > 0 && Number(point[dataKey]) === peak ? "#0066ff" : "#b7cffd"
                 }
@@ -221,13 +194,6 @@ export type BreakdownSlice = {
 
 const RADIAN = Math.PI / 180;
 
-/**
- * The share of the largest slice, in a floating pill on the ring above it.
- *
- * One badge, not one per slice: the donut is read at a glance for "what holds
- * most of the money", and three overlapping pills on a slice worth 0.6% is
- * noise. The rest of the figures are in the legend beside it.
- */
 function LeadPercentBadge({
   cx,
   cy,
@@ -272,31 +238,18 @@ export function FundsBreakdownChart({
   data: BreakdownSlice[];
   currency?: Currency | string;
 
-  /**
-   * `"lead"` badges the largest slice alone — for a donut whose long tail is
-   * worth a fraction of a percent, where three overlapping pills would be
-   * noise. `"all"` badges every slice, which only reads when the shares are
-   * within an order of magnitude of each other.
-   */
   badges?: "lead" | "all";
 }) {
-  /* Two charts can share a page — Funds Breakdown and a module donut — and a
-     duplicated filter id would have them both point at whichever rendered
-     last. */
   const shadow = `donut-badge-${useId().replace(/:/g, "")}`;
 
   const total = data.reduce((sum, slice) => sum + slice.value, 0);
 
-  /* Ties go to the first, which is draw order, so the badge never flickers
-     between two equal slices on a refetch. */
   const leadIndex = data.reduce(
     (lead, slice, index) => (slice.value > data[lead].value ? index : lead),
     0,
   );
 
   return (
-    /* The badge straddles the ring, so it needs to paint outside the plot box
-       — recharts clips its surface by default. */
     <div className="h-56 w-full [&_.recharts-surface]:overflow-visible">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
@@ -312,8 +265,6 @@ export function FundsBreakdownChart({
             </filter>
           </defs>
 
-          {/* The hairline track, so a donut of one slice still reads as a ring
-              rather than a solid circle. */}
           <Pie
             data={[{ value: 1 }]}
             dataKey="value"

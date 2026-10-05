@@ -14,34 +14,20 @@ import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/cn";
 import { SortDirection } from "@/types/enum";
 
-/**
- * The two controls every table header carries, beside the search box.
- *
- * They are one component rather than per-page markup because the alternative is
- * six tables that each grew their own filter menu — the Treasury spec maps
- * every control to a field on the shared filter input, so the menus can share a
- * shape too.
- */
-
 export type FilterOption = {
-  /** The empty string is the group's "All" — it clears rather than filters. */
   value: string;
   label: string;
 
-  /** A flag, an avatar — anything that identifies the option faster than its label. */
   adornment?: React.ReactNode;
 };
 
 export type FilterGroup = {
-  /** Matches the key in `value`, not necessarily the API field. */
   id: string;
   label: string;
   options: FilterOption[];
 
-  /** Rendered under the options — the custom date range lives here. */
   footer?: React.ReactNode;
 
-  /** Shown in place of the options while they are still being fetched. */
   loading?: boolean;
 };
 
@@ -70,7 +56,6 @@ export function TableFilter({
 }: {
   groups: FilterGroup[];
 
-  /** `{ [group.id]: option.value }`. A missing key means that group is off. */
   value: Record<string, string | undefined>;
   onChange: (next: Record<string, string | undefined>) => void;
 }) {
@@ -81,8 +66,6 @@ export function TableFilter({
       <DropdownMenu.Trigger className={triggerClass}>
         <Icon icon={FilterIcon} size={16} />
         Filter
-        {/* The count is the only thing standing between an admin and a table
-            silently narrowed by a menu they closed five minutes ago. */}
         {active > 0 ? (
           <span className="grid size-5 place-items-center rounded-full bg-primary text-2xs font-bold text-white">
             {active}
@@ -114,8 +97,6 @@ export function TableFilter({
                     <p className="px-3 py-2.5 text-sm text-grey-400">Nothing to filter by</p>
                   ) : (
                     group.options.map((option) => {
-                      /* The empty value is the group's "All" row, so it reads as
-                         selected exactly when nothing is filtering. */
                       const selected = (value[group.id] ?? "") === option.value;
 
                       return (

@@ -43,12 +43,6 @@ export const useAdminKyc = createQuery<KycWithUser, AdminKycUserInput>({
   staleTime: 0,
 });
 
-/*
- * Returns `Respond` — a message, no record. Only a *pending* review can be
- * updated: acting on one already decided is a 400, which is the guard against
- * two reviewers deciding the same record. The factory surfaces that message,
- * and invalidating `kyc` refetches the row someone else has just handled.
- */
 export const useAdminUpdateKycStatus = createMutation<
   never,
   AdminUpdateKycStatusInput

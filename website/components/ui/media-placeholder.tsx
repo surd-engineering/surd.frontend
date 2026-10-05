@@ -2,21 +2,8 @@ import { Image01Icon } from "@hugeicons/core-free-icons";
 import { Icon } from "@/components/ui/icon";
 import { cn } from "@/lib/cn";
 
-/**
- * A sized, neutral stand-in for artwork we do not have yet.
- *
- * The Figma boards are full of photography, phone mockups and illustrations
- * that were never exported, so pages reserve the correct space with one of
- * these instead of shipping a broken `<img>` or an invented graphic.
- *
- * **Replace, don't restyle.** When the real asset lands, swap the whole
- * element for `next/image` — the surrounding layout already holds the shape.
- */
-
 type MediaPlaceholderProps = React.ComponentProps<"div"> & {
-  /** Shown in the centre so it is obvious which asset is missing. */
   label?: string;
-  /** Any Tailwind aspect utility, e.g. "aspect-video". */
   aspect?: string;
 };
 

@@ -1,13 +1,3 @@
-/**
- * The two states a table can be empty in, and they are not the same thing.
- *
- * `NoRecords` means the table has nothing in it yet — nothing is wrong, and the
- * copy should say what will fill it. `NoResults` means the data exists but this
- * search or filter excluded all of it, and the way out is to clear the query,
- * not to wait. Showing the first drawing for the second case tells an admin
- * their records are gone.
- */
-
 type IllustrationProps = {
   className?: string;
 };
@@ -207,12 +197,6 @@ export function NoResultsIllustration({ className }: IllustrationProps) {
   );
 }
 
-/**
- * A receipt with the completed tick, for the transaction side panel.
- *
- * It stands in for the PDF that has just been minted: the drawer needs to show
- * the reader that a document now exists without embedding the document itself.
- */
 export function ReceiptIllustration({ className }: IllustrationProps) {
   return (
     <svg

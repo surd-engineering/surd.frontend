@@ -55,7 +55,6 @@ export function useSession() {
 
 const CLOCK_CHECK_MS = 15_000;
 
-/** Why the session ended. "signout" is the one case nobody needs telling. */
 const ENDED_MESSAGE: Record<Exclude<ExpiryReason, "signout">, string> = {
   unauthorized: "Your session is no longer valid. Please sign in again.",
   idle: `You were signed out after ${Math.round(
@@ -118,7 +117,6 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   const user = profile?.data ?? null;
 
-  /* The console is staff-only: no recognised admin role, no session. */
   useEffect(() => {
     if (user && !isAdminRole(user.role)) clearToken("unauthorized");
   }, [user]);

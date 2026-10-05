@@ -438,7 +438,6 @@ export const ADMIN_CONTENT_FIELDS = `
   updated_at
 `;
 
-/** Rate rows name their editor through a lazily-resolved federated user. */
 export const RATE_EDITOR_FIELDS = `
   updated_by
   user {

@@ -40,18 +40,8 @@ import { ID_DOCUMENT_LABELS, KycStatus, type IdDocument } from "@/types/enum";
 import { Permission } from "@/types/permission";
 import type { KycWithUser } from "@/types/kyc";
 
-/*
- * Defines "stuck": a still-pending review older than this. The same value goes
- * to the overview and the table, or the Stuck Reviews count will not match the
- * rows the filter returns.
- */
 const SLA_HOURS = 48;
 
-/*
- * `pending_review_only` is the table's default, so the Status group has to
- * drop it: asking for Verified while the query still says "pending only"
- * returns nothing and reads as a broken filter.
- */
 const STATUS_OPTIONS: FilterOption[] = [
   { value: "", label: "All pending" },
   ...Object.values(KycStatus).map((status) => ({
@@ -60,21 +50,16 @@ const STATUS_OPTIONS: FilterOption[] = [
   })),
 ];
 
-/* `stuck_only` implies `pending_review_only`, so the two are one choice rather
-   than two switches that can contradict each other. */
 const QUEUE_OPTIONS: FilterOption[] = [
   { value: "", label: "Every review" },
   { value: "stuck", label: `Stuck (>${SLA_HOURS}h)` },
 ];
-
 
 export default function KycPage() {
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<Record<string, string | undefined>>({});
   const { page, setPage, pageSize, setPageSize } = useTablePage();
 
-  /* The Stuck Reviews card and the Queue group are the same state, so the tile
-     cannot say one thing while the menu says another. */
   const stuckOnly = filters.queue === "stuck";
 
   const review = useDisclosure<KycWithUser>();
@@ -86,8 +71,6 @@ export default function KycPage() {
 
   const { data, isLoading } = useAdminKycs({
     search: search || undefined,
-    /* One of the three, never two: `stuck_only` implies `pending_review_only`,
-       and an explicit status replaces the pending default entirely. */
     ...(stuckOnly
       ? { stuck_only: true }
       : filters.status
@@ -115,8 +98,6 @@ export default function KycPage() {
     {
       id: "name",
       header: "Name",
-      /* Lazily resolved and nullable — a row whose account was removed
-         degrades to a null cell rather than nulling the whole row. */
       cell: (row) => (
         <PersonCell
           name={row.user ? formatName(row.user) : null}
@@ -141,8 +122,6 @@ export default function KycPage() {
     {
       id: "submitted",
       header: "Submitted",
-      /* Written when the user submits tier-one, so this genuinely is the
-         submission time — and the same clock the SLA uses. */
       cell: (row) => formatTimestamp(row.created_at),
     },
     {
@@ -183,8 +162,6 @@ export default function KycPage() {
           icon={UnavailableIcon}
           hint="Accounts closed after review"
         />
-        {/* Clickable: it drops onto the table filtered to the queue an
-            operator actually needs to work. */}
         <button
           type="button"
           onClick={() =>
@@ -223,8 +200,6 @@ export default function KycPage() {
               value={filters}
               onChange={reset(setFilters)}
             />
-            {/* No Sort by. `AdminKycFilterInput` takes no sort field, so the
-                control would have nothing to send. */}
           </>
         }
         bleed
@@ -279,8 +254,6 @@ function KycReviewDialog({
 }) {
   const decision = useDisclosure<KycStatus>();
 
-  /* Never cached — the document URLs are signed and short-lived, so a cached
-   * copy is a broken image. */
   const { data, isLoading } = useAdminKyc({ user_id: row.user_id });
   const entry = data?.data ?? row;
 
@@ -310,15 +283,11 @@ function KycReviewDialog({
               />
               <div className="flex flex-col gap-1">
                 <p className="text-xl font-bold text-grey-900">{name}</p>
-                {/* The email identifies the customer to a human; the raw id
-                    identified them to nobody. */}
                 <p className="text-sm text-grey-500">{entry.user?.email ?? "—"}</p>
                 <span className="flex flex-wrap items-center gap-2">
                   {entry.user ? (
                     <StatusBadge status={formatEnum(entry.user.status)} />
                   ) : null}
-                  {/* Same rule as the HNIs tile, so the badge and that count
-                      cannot disagree. */}
                   {entry.user?.is_hni ? <HniBadge /> : null}
                 </span>
               </div>
@@ -354,19 +323,12 @@ function KycReviewDialog({
                   className="aspect-[4/3] w-full rounded-xl object-contain"
                 />
               ) : (
-                /* `id_url` may be empty — the placeholder rather than a
-                   broken image. */
                 <div className="grid aspect-[4/3] place-items-center rounded-xl bg-grey-25">
                   <Icon icon={Image01Icon} size={28} className="text-grey-300" />
                 </div>
               )}
             </Field>
 
-            {/*
-              The mockup has no approve/reject controls — the modal shows only
-              the preview. The endpoint exists and is privilege-gated, so a
-              reviewer could otherwise read a document without acting on it.
-            */}
             {pending ? (
               <Can do={Permission.KycDecide}>
                 <div className="grid grid-cols-2 gap-3">
@@ -408,13 +370,6 @@ function KycReviewDialog({
   );
 }
 
-/*
- * Only a *pending* review can be updated: acting on one already decided is a
- * 400 ("only pending kyc reviews can be updated"), which is the guard against
- * two reviewers deciding the same record. The factory surfaces that message,
- * and the mutation invalidates `kyc`, so the row someone else just handled
- * refetches rather than sitting stale.
- */
 function DecisionDialog({
   control,
   userId,

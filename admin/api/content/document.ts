@@ -47,7 +47,6 @@ mutation AdminCreateContent($input: AdminCreateContentInput!) {
 }
 `;
 
-/* Attribution is stored on the row, so the save returns it — no refetch. */
 export const ADMIN_UPDATE_CONTENT_MUTATION = `
 mutation AdminUpdateContent($input: AdminUpdateContentInput!) {
   adminUpdateContent(input: $input) {

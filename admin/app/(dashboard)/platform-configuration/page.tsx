@@ -22,7 +22,6 @@ import {
   type AdminPlatformConfigKey,
 } from "@/types/platform";
 
-/* Shown beside the value so the admin can see what they are typing into. */
 const UNIT_SUFFIX: Record<ConfigUnit, string> = {
   [ConfigUnit.Percentage]: "% Percentage",
   [ConfigUnit.Ngn]: "₦ Naira",
@@ -31,14 +30,8 @@ const UNIT_SUFFIX: Record<ConfigUnit, string> = {
   [ConfigUnit.Days]: "Days",
 };
 
-/* The filled, borderless control the modal's fields share. */
 const CONTROL = "h-14 w-full rounded-xl border-transparent bg-grey-25 px-4 text-md";
 
-/*
- * While the USD ceiling is zero the system falls back to the NGN cap converted
- * at the live rate, so the effective limit drifts with the market until Finance
- * sets a real figure. Worth saying on the row rather than in a ticket.
- */
 const HINTS: Partial<Record<keyof typeof CONFIG_KEY_FIELDS, string>> = {
   MAXIMUM_NET_CAPITAL_OUTFLOW_USD:
     "While this is 0 the NGN cap is converted at the live FX rate, so the USD ceiling moves with the market.",
@@ -133,8 +126,6 @@ export default function PlatformConfigurationPage() {
         />
       </section>
 
-      {/* Mounted per row, so the form always opens on that row's own value
-          rather than whatever was last typed into it. */}
       {edit.isOpen && edit.data ? (
         <EditConfigKeyDialog
           control={edit}
@@ -159,10 +150,6 @@ function EditConfigKeyDialog({
   const [value, setValue] = useState(String(initial.value));
   const save = useModifyPlatformConfig({ onSuccess: control.close });
 
-  /* Type picks *which key to edit*, as the design's dropdown does — it cannot
-   * retype a key, which the backend has no way to do. Switching loads that
-   * key's own value and unit, so a figure typed for one key can never be
-   * saved against another. */
   const selectKey = (key: string) => {
     const next = rows.find((row) => row.key === key);
     if (!next) return;
@@ -172,15 +159,11 @@ function EditConfigKeyDialog({
 
   const parsed = Number(value);
 
-  /* The server rejects negatives per field; failing fast here saves a round
-   * trip and keeps the message next to the input that caused it. */
   const invalid = value.trim() === "" || Number.isNaN(parsed) || parsed < 0;
 
   const submit = () => {
     if (invalid) return;
 
-    /* Only the one field: every input field is optional and omitted ones are
-       left alone, so sending more would overwrite keys nobody opened. */
     const { field, integer } = CONFIG_KEY_FIELDS[config.key];
     save.mutate({ [field]: integer ? Math.round(parsed) : parsed });
   };
@@ -223,17 +206,12 @@ function EditConfigKeyDialog({
               className="rounded-xl text-md"
             />
           </div>
-          {/* A fixed suffix, not a picker: the unit is intrinsic to the key.
-              Switching it would let "Operating Buffer = 2.5 NGN" through while
-              the deployable-capital formula still read 2.5 as a percent. */}
           <span className="flex h-14 w-44 shrink-0 items-center rounded-xl bg-grey-25 px-4 text-md text-grey-900">
             {UNIT_SUFFIX[config.unit]}
           </span>
         </div>
       </Field>
 
-      {/* Read-only: this copy describes behaviour that only changes when the
-          code does, and the mutation does not accept it. */}
       <Field label="Description">
         <p className="min-h-32 rounded-xl bg-grey-25 px-4 py-4 text-md text-grey-900">
           {config.description}

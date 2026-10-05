@@ -12,8 +12,6 @@ import { cn } from "@/lib/cn";
 export const TOAST_TONES = ["info", "success", "warning", "danger"] as const;
 export type ToastTone = (typeof TOAST_TONES)[number];
 
-/* Tinted by tone, as the design's "Admin Account has been suspended." toast
-   is: the colour says what happened before the words do. */
 const tones: Record<
   ToastTone,
   { icon: string; surface: string; glyph: IconSvgElement }
@@ -40,11 +38,6 @@ const tones: Record<
   },
 };
 
-/**
- * Raise a toast from anywhere — a component, a plain function, the request
- * layer. It is not a hook, so there is no provider to be inside of and no
- * ordering to get wrong.
- */
 export function toast({
   message,
   tone = "info",
@@ -68,7 +61,6 @@ export function toast({
   );
 }
 
-/** Mounted once, at the root. Renders whatever `toast()` raises. */
 export function ToastViewport() {
   return (
     <ToastContainer

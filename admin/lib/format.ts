@@ -2,11 +2,6 @@ import { ConfigUnit, isCryptoCurrency, type Currency } from "@/types/enum";
 
 const LOCALE = "en-NG";
 
-/**
- * Every figure in the admin app is Lagos-based — the server bounds each "today"
- * and "yesterday" the same way, so rendering in the viewer's own zone would put
- * a transaction on the wrong day for anyone outside it.
- */
 const TIME_ZONE = "Africa/Lagos";
 
 const CRYPTO_DECIMALS: Record<string, number> = {
@@ -89,14 +84,6 @@ export function formatMultiple(value: number | null | undefined) {
   return `${value.toFixed(2)}×`;
 }
 
-/**
- * A percentage movement for a stat card.
- *
- * `null` means "no baseline" — no comparable snapshot exists yet — and renders
- * as a dash. Falling back to `0%` there would claim the figure held steady when
- * nothing was measured, which is a different and much more reassuring thing to
- * say. A real zero still prints as `0%`, so the two stay distinguishable.
- */
 export function formatChange(
   pct: number | null | undefined,
   suffix = "from last month",
@@ -146,14 +133,6 @@ export function formatDate(value: string | null | undefined) {
   });
 }
 
-/**
- * An absolute movement, for the `_change_today` fields — those are amounts, not
- * rates, so they never carry a percent sign.
- *
- * Returned in the same shape as `formatChange` so the card colours it by
- * direction: a liability that fell by ₦5M printed in the same green as one that
- * rose by ₦5M is worse than printing nothing.
- */
 export function formatAbsoluteChange(
   amount: number | null | undefined,
   currency: Currency | string = "NGN",
@@ -175,10 +154,6 @@ export function formatPercent(value: number | null | undefined) {
   return `${Math.round(value * 100) / 100}%`;
 }
 
-/**
- * The unit is intrinsic to the config key, so it is a fixed suffix rather than
- * a choice. `value` is a plain number on the wire and must be sent back as one.
- */
 export function formatConfigValue(value: number, unit: ConfigUnit | string) {
   switch (unit) {
     case ConfigUnit.Percentage:
@@ -195,10 +170,6 @@ export function formatConfigValue(value: number, unit: ConfigUnit | string) {
   }
 }
 
-/**
- * The API returns the address in full; the design shows `102.89.xxx.xxx`, so
- * the masking is ours to do.
- */
 export function maskIp(ip: string | null | undefined) {
   if (!ip) return "—";
   const parts = ip.split(".");
@@ -206,14 +177,6 @@ export function maskIp(ip: string | null | undefined) {
   return `${parts[0]}.${parts[1]}.xxx.xxx`;
 }
 
-/**
- * "126 days left", for a maturity date the table also prints in full.
- *
- * `null` once the date has passed, and the caller falls back to the date
- * alone. A plan can end early — broken, or settled — so a past `ending_at` is
- * not proof it matured, and the countdown is the one thing that would be
- * asserting it. The Status column is what says how a plan ended.
- */
 export function formatDaysLeft(value: string | null | undefined) {
   if (!value) return null;
 
@@ -227,11 +190,6 @@ export function formatDaysLeft(value: string | null | undefined) {
   return `${formatCount(days)} ${days === 1 ? "day" : "days"} left`;
 }
 
-/**
- * The audit log stores the raw user agent, which is not a thing to put in a
- * table cell. This is the honest ceiling of what it will tell us: the platform
- * and the browser, with a version where one is offered.
- */
 export function parseUserAgent(agent: string | null | undefined) {
   if (!agent) return null;
 
@@ -245,8 +203,6 @@ export function parseUserAgent(agent: string | null | undefined) {
     : /Linux/.test(agent) ? "Linux"
     : "Unknown";
 
-  /* Edge and Opera both claim Chrome, and Chrome claims Safari — most
-   * specific first, or every row reads "Safari". */
   const browser =
     match(agent, /Edg\/(\d+)/, "Edge") ??
     match(agent, /OPR\/(\d+)/, "Opera") ??

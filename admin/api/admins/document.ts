@@ -37,11 +37,6 @@ query AdminPortalRoles {
 }
 `;
 
-/*
- * Served from the compiled privilege enum rather than a table, so it cannot
- * drift from what the server enforces. This — not the mockup's four items — is
- * the source of truth for the permissions checklist.
- */
 export const ADMIN_PRIVILEGES_QUERY = `
 query AdminPrivileges {
   adminPrivileges {
@@ -86,10 +81,6 @@ mutation AdminUpdateAdminAccount($input: AdminUpdateAdminAccountInput!) {
 }
 `;
 
-/*
- * Suspend, reactivate, resend and cancel all take `AdminAccountActionInput`
- * and all return `Respond`, so one document shape covers the four of them.
- */
 function accountAction(resolver: string, operation: string) {
   return `
 mutation ${operation}($input: AdminAccountActionInput!) {

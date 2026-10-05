@@ -22,9 +22,6 @@ import type { Rate } from "@/types/rate";
 export default function RatesPage() {
   const editRate = useDisclosure<Rate>();
 
-  /* `input` is required but every field inside it is optional — `{}` is all
-   * pairs. Note that no rows is a 400 ("rates not found"), not an empty list,
-   * so an error here is an empty state rather than a failure. */
   const { data, isLoading, error } = useRates({});
 
   const columns: Column<Rate>[] = [
@@ -66,8 +63,6 @@ export default function RatesPage() {
           <span className="font-semibold">
             {rate.markup == null ? "—" : `${rate.markup}%`}
           </span>
-          {/* Stored, settable and shown — but no conversion path reads it.
-              Deliberately not described as affecting conversions. */}
           <span className="text-xs text-grey-400">not applied to conversions</span>
         </span>
       ),
@@ -75,9 +70,6 @@ export default function RatesPage() {
     {
       id: "effective",
       header: "Effective date",
-      /* There is no `effective_date`, deliberately: a future date could not
-         defer anything, since `ExchangeRate` reads the row directly. The date
-         is a consequence of saving. */
       cell: (rate) => formatTimestamp(rate.updated_at),
     },
     {
@@ -178,14 +170,9 @@ function EditRateDialog({
       isSubmitting={save.isPending}
       onConfirm={() =>
         save.mutate({
-          /* Sent from the row, never from a picker: the mutation is an upsert
-             keyed on the pair, so a changed From/To would create or overwrite a
-             different pair and leave this one untouched. */
           base: rate.base,
           exchange: rate.exchange,
           value: parsedValue,
-          /* Omitted fields are written as null, so the existing margin has to
-             be sent back to survive the save. */
           markup: parsedMarkup,
         })
       }
@@ -236,9 +223,6 @@ function EditRateDialog({
         />
       </Field>
 
-      {/* No date picker: the mockup's "Effective date" is not backed, and a
-          field implying deferral while the rate takes effect immediately is
-          worse than no field. */}
       <p className="text-xs text-grey-400">
         Saving takes effect immediately — rates are stored one row per pair, so
         there is nothing to schedule.

@@ -22,11 +22,6 @@ import type {
 } from "@/types/treasury";
 import type { Transaction } from "@/types/transaction";
 
-/**
- * `data` is a list — one row per currency, nothing converted. Passing
- * `currency` narrows it to a single row rather than changing the shape, so the
- * caller still has to pick the row out of the array.
- */
 export const useAdminTreasuryOverview = createQuery<
   AdminTreasuryOverview[],
   AdminCurrencyInput
@@ -46,12 +41,6 @@ export const useAdminTreasurySeries = createQuery<
   staleTime: 60_000,
 });
 
-/*
- * Initiate is silent: its own toast would fire behind the modal that is about
- * to ask for the code. The guard rails refuse at *confirm* time, after the code
- * is accepted, and the factory surfaces those messages — each names the limit
- * that was hit.
- */
 export const useInitiateCapitalOutflow = createMutation<
   CapitalTransactionChallenge,
   AdminInitiateCapitalOutflowInput

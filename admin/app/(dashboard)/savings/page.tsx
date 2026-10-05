@@ -85,16 +85,12 @@ const CURRENCY_OPTIONS: FilterOption[] = [
   })),
 ];
 
-/* Keyed, not positional — the server is free to return the two templates in
-   either order, and a donut whose colours swap between refetches is worse than
-   one whose colours are simply wrong. */
 const TYPE_COLORS: Record<string, string> = {
   FIXED_SAVE: SERIES_COLORS.flexi,
   TARGET_SAVE: "#3fc75a",
 };
 
 const TYPE_FALLBACK = [SERIES_COLORS.savings, SERIES_COLORS.roi];
-
 
 export default function SavingsPage() {
   const { currency } = useCurrency();
@@ -103,8 +99,6 @@ export default function SavingsPage() {
   const [customRange, setCustomRange] = useState(EMPTY_RANGE);
   const { page, setPage, pageSize, setPageSize } = useTablePage();
 
-  /* Three ranges, as the design has them: the cards answer to the page
-     header's, and each chart owns the window it draws. */
   const { key, setKey, range, options } = useDateRange();
   const typeRange = useDateRange("12m");
   const maturityRange = useDateRange("12m");
@@ -137,8 +131,6 @@ export default function SavingsPage() {
   ];
 
   const { data: plans, isLoading: loadingRows } = useSavings({
-    /* An explicit Currency pick beats the platform toggle — the admin who
-       asked for USD plans meant it. */
     currency: (filters.currency as Currency) ?? currency,
     search: search || undefined,
     ...(filters.status ? { statuses: [filters.status as SavingStatus] } : {}),
@@ -149,8 +141,6 @@ export default function SavingsPage() {
     paginate: true,
   });
 
-  /* One row per currency, nothing converted — match on `currency` rather than
-   * trusting the position. */
   const cards =
     overview?.data?.find((row) => row.currency === currency) ?? overview?.data?.[0];
 
@@ -203,8 +193,6 @@ export default function SavingsPage() {
         }
       />
 
-      {/* Every balance below is principal only — interest is the ROI module's
-          liability. The two are not meant to add up to a user's holdings. */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           label="Total Savings Balance"
@@ -269,15 +257,11 @@ export default function SavingsPage() {
               ? "…"
               : formatCompactMoney(cards?.upcoming_maturities_30d_amount, currency)
           }
-          /* The count qualifies the amount rather than standing beside it as a
-             second figure — "₦400K (2)", as the design has it. */
           suffix={
             loadingCards ? undefined : `(${formatCount(cards?.upcoming_maturities_30d_count)})`
           }
           icon={MoneyBag01Icon}
           hint="Fixed deposit principal falling due in the next 30 days"
-          /* The card names a set of plans, so it leads to them: the same 30-day
-             window the figure is computed from, applied to the table below. */
           footer={
             <Link
               href={ROUTES.finance.savingsMaturities}
@@ -289,8 +273,6 @@ export default function SavingsPage() {
         />
       </div>
 
-      {/* Equal halves: the donut answers "what is it made of" and the bars
-          answer "when does it come due" — neither is the secondary. */}
       <div className="grid gap-4 xl:grid-cols-2">
         <Panel
           title="Savings by Type"
@@ -313,8 +295,6 @@ export default function SavingsPage() {
             <div className="grid items-center gap-6 sm:grid-cols-2">
               <FundsBreakdownChart data={slices} currency={currency} />
 
-              {/* Stacked rather than a right-aligned amount: two entries in a
-                  half-width panel leave the eye nothing to travel to. */}
               <ul className="flex flex-col gap-6">
                 {slices.map((slice) => (
                   <li key={slice.name} className="flex flex-col gap-2">
@@ -356,12 +336,6 @@ export default function SavingsPage() {
               <Spinner size={28} className="text-primary" />
             </div>
           ) : (
-            /* Bars, not a line: each bucket is a separate wall of money falling
-               due, and a line between them implies a balance moving from one to
-               the next. Target savings, broken plans and interest are excluded
-               server-side — a target date is a goal not a lock expiry, an
-               early-exited plan must not still appear at its original date, and
-               FD interest was paid upfront at creation. */
             <BarSeriesChart
               data={timeline?.data ?? []}
               currency={currency}
@@ -394,9 +368,6 @@ export default function SavingsPage() {
                 setPage(1);
               }}
             />
-            {/* No Sort by. `SavingFilterInput` has no sort field — the spec's
-                filter table lists every input it takes and none of them orders
-                the result — so the control would have nothing to send. */}
           </>
         }
         bleed

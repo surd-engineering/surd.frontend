@@ -65,7 +65,6 @@ export function FaqBrowser({
       <div className="min-w-0 flex-1">
         {results.length > 0 ? (
           <Accordion
-            /* Remount on change so the first answer opens for each new list. */
             key={trimmed || activeId}
             items={results}
             defaultValue={results[0]?.id}
@@ -75,10 +74,10 @@ export function FaqBrowser({
           <p className="rounded-2xl border border-dashed border-grey-100 px-6 py-16 text-center text-paragraph-sm text-grey-400">
             No questions match “{query}”. Try a different search, or email{" "}
             <a
-              href="mailto:support@surd.ng"
+              href="mailto:support@surd.finance"
               className="font-semibold text-primary hover:underline"
             >
-              support@surd.ng
+              support@surd.finance
             </a>
             .
           </p>

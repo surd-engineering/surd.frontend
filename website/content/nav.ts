@@ -99,7 +99,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   { label: "LinkedIn", href: "https://linkedin.com", icon: "/icons/linkedin.svg" },
 ];
 
-export const SUPPORT_EMAIL = "support@surd.ng";
+export const SUPPORT_EMAIL = "support@surd.finance";
 
 export const FOOTER_CTA = {
   title: "Your future savings won't build themselves.",

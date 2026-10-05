@@ -78,15 +78,6 @@ import type { Transaction } from "@/types/transaction";
 import { formatTime } from "@/lib/utils";
 import { PageHeader } from "@/components/ui/page-header";
 
-
-/*
- * Keyed rather than positional so a slice keeps its colour across the modes:
- * Flexi is the same blue on SAVINGS and on SYSTEM, and Fixed is the same
- * orange on both.
- *
- * The last three are the donut's own — the line charts have no equivalent
- * series, and SYSTEM needs six colours that stay apart from each other.
- */
 const DONUT_COLORS: Record<string, string> = {
   TOTAL_FLEXI_BALANCE: SERIES_COLORS.flexi,
   TOTAL_FIXED_BALANCE: SERIES_COLORS.savings,
@@ -97,8 +88,6 @@ const DONUT_COLORS: Record<string, string> = {
   TOTAL_CAPITAL_OUTFLOW: "#8257e6",
 };
 
-/* CURRENCY has no fixed key set — one slice per currency the platform holds,
-   and that list grows — so those fall back to the palette by position. */
 const DONUT_PALETTE = [
   SERIES_COLORS.flexi,
   SERIES_COLORS.savings,
@@ -113,30 +102,15 @@ const BREAKDOWN_TABS: TabItem[] = [
   { value: BreakdownMode.Currency, label: "Currency" },
 ];
 
-/*
- * Each mode answers a different question, so each carries its own footnote.
- * SYSTEM's three slices sum to Total Funds *before* the net capital position
- * deduction, which is why that one is footnoted rather than drawn as a
- * negative segment.
- */
 const BREAKDOWN_NOTE: Record<BreakdownMode, string> = {
   [BreakdownMode.Savings]:
     "Principal only — interest is reported as ROI, not as savings.",
-  /* The three balances sum to total funds before the net capital position
-     deduction. The last two slices are not balances at all, and saying so is
-     the only thing that keeps the percentages honest. */
   [BreakdownMode.System]:
     "Pending withdrawals are a claim on balances already counted here, and capital outflow is a cumulative total rather than money held.",
   [BreakdownMode.Currency]:
     "Slices are sized in one currency so they can be compared; each amount is shown in its own.",
 };
 
-/*
- * The donut is a balance as it stands, not a flow over a window, so the only
- * date that means anything to it is `end_date` — "as of". A start date would
- * bound a period, which a balance does not have, and the daily snapshots are
- * what make the past dates answerable at all.
- */
 const AS_OF_OPTIONS = [
   { value: "today", label: "Today" },
   { value: "month", label: "End of last month" },
@@ -146,7 +120,6 @@ const AS_OF_OPTIONS = [
 function asOfDate(value: string) {
   const now = new Date();
 
-  /* Day 0 of this month is the last day of the previous one. */
   if (value === "month")
     return new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
   if (value === "year")
@@ -172,7 +145,6 @@ export default function DashboardPage() {
     currency,
   });
 
-
   const cards =
     metrics?.data?.find((row) => row.currency === currency) ?? metrics?.data?.[0];
 
@@ -182,7 +154,6 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Platform overview and financial metrics"
       />
-
 
       <HeroStatBanner>
         <HeroStat
@@ -224,7 +195,6 @@ export default function DashboardPage() {
           value={
             loadingMetrics ? "…" : formatCompactMoney(cards?.total_roi_liability, currency)
           }
-          /* Absolute, not a percentage — the only change field that is. */
           delta={formatAbsoluteChange(cards?.total_roi_liability_change_today, currency)}
         />
       </HeroStatBanner>
@@ -268,9 +238,6 @@ export default function DashboardPage() {
           label="Liquidity Ratio"
           value={loadingMetrics ? "…" : formatMultiple(cards?.liquidity_ratio)}
           icon={PercentIcon}
-          /* The status is the verdict. A ratio of 0 means there is nothing to
-             cover, not that cover is missing — reading the bare number would
-             report a healthy platform as uncovered. */
           note={formatEnum(cards?.liquidity_status)}
           noteTone={healthTone(cards?.liquidity_status)}
           hint="Safe deployable capital against ROI liability plus pending withdrawals"
@@ -338,8 +305,6 @@ function SystemFundsPanel({
         </div>
       ) : (
         <>
-          {/* Three lines, and only three — Capital Outflow is a cumulative log
-              of events, not a balance, and lives in Treasury. */}
           <SeriesChart
             data={data?.data ?? []}
             currency={currency}
@@ -372,19 +337,8 @@ function FundsBreakdownPanel({ currency }: { currency: Currency }) {
     end_date: asOfDate(asOf),
   });
 
-  /* One group per mode, and it stays a list even when a mode is asked for — so
-   * match on `mode` rather than trusting the position. */
   const group = data?.data?.find((entry) => entry.mode === mode) ?? data?.data?.[0];
 
-  /*
-   * SYSTEM returns seven items and draws six: everything but the combined
-   * Savings balance, which Fixed and Target already account for between them.
-   *
-   * The server's order puts ROI before Fixed and Target, so the keys are also
-   * the sort — the legend reads Flexi, Fixed, Target, ROI as the design does,
-   * with the two non-balances last. SAVINGS and CURRENCY return exactly what
-   * they draw, in the order they draw it.
-   */
   const order = SYSTEM_DONUT_KEYS as readonly string[];
 
   const items =
@@ -399,12 +353,6 @@ function FundsBreakdownPanel({ currency }: { currency: Currency }) {
     value: item.amount,
     color: DONUT_COLORS[item.key] ?? DONUT_PALETTE[index % DONUT_PALETTE.length],
 
-    /*
-     * On CURRENCY the slice is sized by `amount`, converted into one comparison
-     * currency, while `native_amount` holds the real figure — so the legend
-     * reads "$6,224.98" against a slice sized in naira. Labelling with the
-     * converted figure instead would state a dollar holding in naira.
-     */
     label:
       mode === BreakdownMode.Currency && item.native_amount != null
         ? formatMoney(item.native_amount, item.key)
@@ -493,7 +441,6 @@ function PendingWithdrawalsPanel({
 }) {
   const settle = useDisclosure<{ transaction: Transaction; approve: boolean }>();
 
-
   const { data, isLoading } = useTransactions({
     pending_approval: true,
     currency,
@@ -575,8 +522,6 @@ function PendingWithdrawalsPanel({
                 </div>
               </dl>
 
-              {/* Money moves server-side, so both paths go through a
-                  confirmation rather than firing on the click. */}
               <Can do={Permission.TransactionsSettle}>
                 <div className="flex gap-2">
                   <Button
@@ -608,7 +553,6 @@ function PendingWithdrawalsPanel({
         </ul>
       )}
 
-
       <Button trailingIcon={ArrowRight02Icon} variant="soft" size="lg" block className="mt-4 rounded-full" asChild>
         <Link href={ROUTES.finance.transactions}>View all</Link>
       </Button>
@@ -639,9 +583,6 @@ function SettleDialog({
   );
   const [note, setNote] = useState("");
 
-  /* Settling changes `pending_withdrawals`, which feeds Safe Deployable
-   * Capital and the Liquidity Ratio — the mutation invalidates metrics, so the
-   * cards above refresh with the panel. */
   const settle = useAdminSettleTransaction({ onSuccess: control.close });
 
   const amount = formatMoney(transaction.amount, transaction.currency);
@@ -663,7 +604,6 @@ function SettleDialog({
         settle.mutate({
           transaction_id: transaction.id,
           status: approve ? TransactionStatus.Completed : TransactionStatus.Cancelled,
-          /* Required when cancelling, ignored when completing. */
           ...(approve ? {} : { reason, note: note.trim() || undefined }),
         })
       }
@@ -698,8 +638,6 @@ function SettleDialog({
 function RecentTransactionsPanel({ currency }: { currency: Currency }) {
   const [tab, setTab] = useState<string>(TransactionCategory.Deposit);
 
-  /* Filtered on `category`, not `type` — the two are mutually exclusive and
-   * sending both is a 400. */
   const { data, isLoading } = useTransactions({
     category: tab as TransactionCategory,
     currency,
@@ -739,9 +677,6 @@ function RecentTransactionsPanel({ currency }: { currency: Currency }) {
     },
     {
       id: "flow",
-      /* The design asks one question of this column — where the money went —
-         so it shows the destination alone. The full leg stays on the cell, and
-         the ledger on Transaction History renders both ends. */
       header: "To",
       cell: (row) =>
         row.flow ? (

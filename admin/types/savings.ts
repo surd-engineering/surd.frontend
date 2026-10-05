@@ -27,16 +27,9 @@ export interface Saving {
   duration: number;
   status: SavingStatus;
 
-  /** Gross ever deposited — never decreases. Not what "Amount Saved" means. */
   amount_saved: number;
   amount_withdrawn: number;
 
-  /**
-   * `amount_saved - amount_withdrawn`: the live principal, and what the
-   * "Amount Saved" column must render. Using `amount_saved` makes a
-   * partially-withdrawn plan overstate its holding and stops the column
-   * reconciling against the Total Savings Balance card.
-   */
   balance: number;
   interest: number;
   interest_accrued: number;
@@ -71,11 +64,6 @@ export interface Saving {
 
   product?: Product | null;
 
-  /**
-   * FIXME(api): declared `User!` but resolved lazily, so a deleted customer
-   * nulls the **entire row** rather than just this field. Until the schema
-   * drops the `!`, tables that select it show gaps.
-   */
   user?: Pick<User, "id" | "firstname" | "lastname" | "email" | "avatar"> | null;
   created_at: string;
   updated_at: string;
@@ -92,10 +80,8 @@ export interface SavingFilterInput {
   statuses?: SavingStatus[];
   currency?: Currency;
 
-  /** Matches the plan label. */
   search?: string;
 
-  /** The maturity window the Upcoming Maturities drill-down uses. */
   ending_after?: string;
   ending_before?: string;
   page?: number;

@@ -48,15 +48,6 @@ export function EmptyState({
   );
 }
 
-/**
- * A table's empty state, which is two different states wearing one name.
- *
- * With a search or filter applied, the records may well exist — this one
- * excluded them, and the way out is to clear it. With nothing applied, the
- * table is genuinely empty and the copy should say what will fill it. Showing
- * the second message to someone who mistyped a reference sends them looking for
- * missing money.
- */
 export function TableEmptyState({
   title,
   description,
@@ -64,11 +55,9 @@ export function TableEmptyState({
   onClearSearch,
   action,
 }: {
-  /** Used when nothing is filtered — name the thing, e.g. "No Capital Transactions Record Yet". */
   title: string;
   description?: string;
 
-  /** The active search term, if any. Its presence picks the state. */
   query?: string;
   onClearSearch?: () => void;
   action?: React.ReactNode;

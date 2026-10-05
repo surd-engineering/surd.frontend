@@ -63,14 +63,7 @@ const STATUS_OPTIONS: FilterOption[] = [
   })),
 ];
 
-/* The filled, borderless control every field in these modals uses. */
 const CONTROL = "h-14 w-full rounded-xl border-transparent bg-grey-25 px-4 text-md";
-
-/*
- * No Sort by, though the blurred frames behind the modals show one:
- * `AdminAccountsFilterInput` takes no sort field, so the control would have
- * nothing to send. Filter maps onto its `status` and `role_id`.
- */
 
 export default function AdminAccountsPage() {
   const [query, setQuery] = useState("");
@@ -96,9 +89,6 @@ export default function AdminAccountsPage() {
   const { data: roles } = useAdminPortalRoles();
   const resendInvite = useAdminResendInvite();
 
-  /* Super Admin rows carry no actions, as in the design. The server would
-     refuse suspending the last one anyway; hiding the controls stops an admin
-     reaching for a lockout guard to find out. */
   const systemRoles = new Set(
     (roles?.data ?? []).filter((role) => role.system).map((role) => role.id),
   );
@@ -115,7 +105,6 @@ export default function AdminAccountsPage() {
     },
   ];
 
-  /* A narrowed result set starts back at page one. */
   const reset =
     <T,>(setter: (value: T) => void) =>
     (value: T) => {
@@ -156,7 +145,6 @@ export default function AdminAccountsPage() {
     {
       id: "login",
       header: "Last login",
-      /* Null for an admin who has never signed in — a dash, not the epoch. */
       cell: (admin) => formatTimestamp(admin.admin_last_login_at),
     },
     {
@@ -167,8 +155,6 @@ export default function AdminAccountsPage() {
         if (admin.admin_role_id && systemRoles.has(admin.admin_role_id)) return null;
 
         return (
-          /* The server enforces ADMIN_ONBOARDING regardless; hiding the
-             controls just stops the click that was always going to 403. */
           <Can do={Permission.AdminsManage}>
             <span className="flex items-center gap-2">
               {status === AdminAccountStatus.PendingInvite ? (
@@ -207,8 +193,6 @@ export default function AdminAccountsPage() {
                   </Button>
 
                   {status === AdminAccountStatus.Suspended ? (
-                    /* Without this a suspension is irreversible from the UI —
-                       the mockup has no control for it. */
                     <Button
                       tone="success"
                       variant="soft"
@@ -314,13 +298,6 @@ export default function AdminAccountsPage() {
   );
 }
 
-/**
- * The role dropdown and the permissions checklist, shared by both modals.
- *
- * `adminPrivileges` drives the checklist rather than the mockup's four items:
- * it is served from the compiled enum, so it cannot drift from what the server
- * enforces, and two of the mockup's entries are not privileges at all.
- */
 function useRoleForm(initialRoleId: string, initialPrivileges: AdminPrivilege[]) {
   const [roleId, setRoleId] = useState(initialRoleId);
   const [privileges, setPrivileges] = useState(initialPrivileges);
@@ -330,8 +307,6 @@ function useRoleForm(initialRoleId: string, initialPrivileges: AdminPrivilege[])
 
   const all = roles?.data ?? [];
 
-  /* Picking a role loads that role's template into the checklist. The list is
-   * a starting point copied at invite time, not a live link to the role. */
   const selectRole = (next: string) => {
     setRoleId(next);
     setPrivileges(all.find((role) => role.id === next)?.privileges ?? []);
@@ -350,7 +325,6 @@ function useRoleForm(initialRoleId: string, initialPrivileges: AdminPrivilege[])
     role: all.find((item) => item.id === roleId),
     privileges,
     toggle,
-    /* Assignment offers active roles only; inactive ones still come back. */
     roleOptions: all
       .filter((item) => item.active)
       .map((item) => ({ value: item.id, label: item.name })),
@@ -365,8 +339,6 @@ function RoleFields({
   form: ReturnType<typeof useRoleForm>;
   placeholder?: string;
 }) {
-  /* Super Admin bypasses every privilege check, so ticking boxes for it would
-   * be theatre. Disable the list and say why. */
   const isSystemRole = form.role?.system ?? false;
 
   return (
@@ -389,8 +361,6 @@ function RoleFields({
             : undefined
         }
       >
-        {/* The label alone, as the design shows; the server's description
-            rides along as a tooltip rather than being dropped. */}
         <ul className="flex flex-col rounded-xl bg-grey-25 px-5 py-2">
           {form.privilegeOptions.map((option) => (
             <li key={option.privilege}>
@@ -424,8 +394,6 @@ function InviteAdminDialog({
   const form = useRoleForm("", []);
 
   const invite = useAdminInviteAdmin({
-    /* The expiry goes in the toast — the invite link is single-use and lives
-     * 48 hours, which the inviter needs to know. */
     onSuccess: (response) => {
       toast({
         tone: "success",
@@ -454,8 +422,6 @@ function InviteAdminDialog({
           full_name: fullName.trim(),
           email: email.trim(),
           role_id: form.roleId,
-          /* Omitted when nothing was ticked, so the account inherits the
-             role's own set rather than being invited with none. */
           privileges: form.privileges.length ? form.privileges : undefined,
         })
       }
@@ -509,8 +475,6 @@ function EditRoleDialog({
         save.mutate({
           user_id: admin.id,
           role_id: form.roleId,
-          /* Always sent: omitting it after a role change silently resets the
-             account to that role's defaults. */
           privileges: form.privileges,
         })
       }
@@ -528,13 +492,6 @@ function EditRoleDialog({
   );
 }
 
-/*
- * The three destructive actions each get a confirmation. Suspend says out loud
- * that it revokes every session, because that is the part an admin does not
- * expect. A refused action — the last-super-admin lockout guard — surfaces the
- * server's own message, which names the reason; the factory's error toast
- * already does that, so nothing is caught here.
- */
 function SuspendDialog({
   control,
 }: {
