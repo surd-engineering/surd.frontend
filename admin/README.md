@@ -461,47 +461,4 @@ The API layer, the session clocks and the permission gates are documented in
   `<RequirePermission need={...}>` gates a page; the sidebar drops what the
   signed-in admin cannot reach.
 
-## Verified
 
-- `npm run build` — 29 routes, all static or SSG
-- `npm run lint` — clean, and no `any` anywhere
-- **No horizontal overflow** on any page at 390 / 768 / 1024 / 1440 / 1920px
-  (90/90 checks, comparing `document.scrollWidth` to `clientWidth`)
-
----
-
-## Known gaps
-
-- **Crypto icons have not been checked against Figma.** That board was never
-  readable (the Figma MCP quota ran out), and no screenshot was supplied.
-  Confirm sizing and treatment with design before shipping.
-- **Social sign-in marks are monochrome.** Google and Figma require their
-  full-colour official logos in production — drop the official SVG into
-  `public/brand/` and swap the `icon` in `social-button.tsx`.
-- **Avatar placeholders use `surd-blue`.** The Figma avatars use an indigo from
-  an older UI kit that is not on the SURD colour board; they were moved onto
-  the brand palette deliberately.
-- **The Finance screens follow the console's patterns, not a specific comp.**
-  Those Figma frames were never readable, so Flexi Wallet, Savings, ROI, Vault,
-  Treasury and Transaction history were built from the domain plus the
-  established page shape — header, headline stats, filterable table. Confirm
-  the columns and metrics with design before they ship.
-- **The backend is mid-change.** The API layer is built against the August 2026
-  schema export (`api-query.md`, `api-mutation.md`, `api-enum.md`). Six admin
-  mutations are stubs with no return type, several list queries were truncated
-  by the exporter, and the filter *input* shapes were never published. Each is
-  marked `FIXME(api)` / `TODO(api)` where it matters and tabulated in
-  [api/README.md](api/README.md#known-backend-gaps). **No page reads live data
-  yet** — the modules under `content/` are still sample data, on purpose, until
-  the schema settles.
-- **`lib/secure.ts` now reads `NEXT_PUBLIC_SECURE_KEY`,** falling back to
-  `NEXT_SECURE_KEY` and then to a constant. The key ships in the bundle
-  — it has to, since the browser decrypts with it — so this raises the cost of
-  reading a session out of storage without pretending to stop code running on
-  the page. The real boundary is an httpOnly cookie from the backend; the file
-  says so at the top.
-- **Access control is client-side only.** `RequirePermission` and `Can` decide
-  what is *shown*; the graph authorises every resolver by bearer token and
-  decides what is *allowed*. The role → permission table in
-  `types/permission.ts` is a proposal — the graph exposes `user.role` as an
-  unconstrained string.
